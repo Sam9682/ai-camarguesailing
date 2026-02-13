@@ -69,6 +69,28 @@ def create_app(config_class=Config):
     # app.register_blueprint(booking_bp)
     # app.register_blueprint(forum_bp)
     
+    # Temporary test route to verify base.html template
+    @app.route('/test-base')
+    def test_base():
+        """Test route to verify base.html template rendering."""
+        from flask import render_template
+        return render_template('test_base.html')
+    
+    # Public routes
+    @app.route('/')
+    def home():
+        """
+        Home page route displaying sailing business overview.
+        
+        This route renders the home page with information about
+        Camargue Sailing, including features, about section, and
+        call-to-action for registration or booking.
+        
+        Requirements: 1.1
+        """
+        from flask import render_template
+        return render_template('home.html')
+    
     return app
 
 

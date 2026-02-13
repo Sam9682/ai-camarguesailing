@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Test Page - Camargue Sailing{% endblock %}
+
+{% block content %}
+<div style="padding: 2rem; background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+    <h1>Base Template Test</h1>
+    <p>This is a test page to verify the base.html template is working correctly.</p>
+    
+    <h2>Features Implemented:</h2>
+    <ul>
+        <li>✓ Navigation menu with public pages (Home, Voyages, Camargue, Voyage Options)</li>
+        <li>✓ Authentication status display (Welcome message for logged-in users)</li>
+        <li>✓ Conditional menu items (Calendar and Forum for authenticated users)</li>
+        <li>✓ CSS styling with responsive design</li>
+        <li>✓ AMEL boat image in navigation logo</li>
+        <li>✓ Flash message support</li>
+        <li>✓ Footer with contact information</li>
+    </ul>
+    
+    <h2>Session Status:</h2>
+    <p>
+        {% if session.get('user_id') %}
+            <strong>Logged in as:</strong> {{ session.get('user_email', 'Unknown') }}
+            {% if session.get('is_verified') %}
+                <span style="color: green;">(Verified)</span>
+            {% else %}
+                <span style="color: red;">(Unverified)</span>
+            {% endif %}
+        {% else %}
+            <strong>Status:</strong> Not logged in (Guest)
+        {% endif %}
+    </p>
+</div>
+{% endblock %}

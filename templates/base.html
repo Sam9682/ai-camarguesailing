@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Camargue Sailing{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-brand">
+                    <a href="/">
+                        <img src="{{ url_for('static', filename='images/AMEL_2025-10-28.jpeg') }}" alt="Camargue Sailing" class="nav-logo">
+                        <span>Camargue Sailing</span>
+                    </a>
+                </div>
+                
+                <ul class="nav-menu">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/voyages">Voyages</a></li>
+                    <li><a href="/camargue">Camargue</a></li>
+                    <li><a href="/voyage-options">Voyage Options</a></li>
+                    
+                    {% if session.get('user_id') %}
+                        {# Authenticated user menu #}
+                        <li><a href="/calendar">Calendar</a></li>
+                        <li><a href="/forum">Forum</a></li>
+                    {% endif %}
+                </ul>
+                
+                <div class="nav-auth">
+                    {% if session.get('user_id') %}
+                        {# User is authenticated #}
+                        <span class="auth-status">
+                            Welcome, {{ session.get('user_email', 'User') }}
+                            {% if not session.get('is_verified') %}
+                                <span class="unverified-badge">(Unverified)</span>
+                            {% endif %}
+                        </span>
+                        <a href="/signout" class="btn btn-secondary">Sign Out</a>
+                    {% else %}
+                        {# Guest user #}
+                        <a href="/signin" class="btn btn-primary">Sign In</a>
+                        <a href="/signup" class="btn btn-secondary">Sign Up</a>
+                    {% endif %}
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>Camargue Sailing</h3>
+                <p>Experience the beauty of the South of France on our AMEL sailing voyages.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/voyages">Voyages</a></li>
+                    <li><a href="/camargue">Camargue</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact</h3>
+                <p>Saintes-Maries-de-la-Mer, France</p>
+                <p>Email: info@camarguesailing.com</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Camargue Sailing. All rights reserved.</p>
+        </div>
+    </footer>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
