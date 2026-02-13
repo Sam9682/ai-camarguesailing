@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: camargue_postgres
+    environment:
+      POSTGRES_USER: camargue_user
+      POSTGRES_PASSWORD: camargue_password
+      POSTGRES_DB: camargue_sailing
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U camargue_user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build: .
+    container_name: camargue_flask
+    environment:
+      FLASK_APP: src.app
+      FLASK_ENV: development
+      DATABASE_URL: postgresql://camargue_user:camargue_password@db:5432/camargue_sailing
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/app
+    depends_on:
+      db:
+        condition: service_healthy
+    command: flask run --host=0.0.0.0
+
+volumes:
+  postgres_data:
