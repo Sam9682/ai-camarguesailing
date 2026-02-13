@@ -41,7 +41,7 @@ def init_db():
     for the first time or when running migrations.
     """
     # Import all models here to ensure they are registered with Base
-    from src.models import User  # noqa: F401
+    from src.models import User, VerificationToken  # noqa: F401
     Base.metadata.create_all(bind=engine)
 
 
