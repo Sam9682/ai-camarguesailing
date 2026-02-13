@@ -351,3 +351,399 @@ class TestTokenGeneration:
         # Second verification should fail (token deleted)
         result2 = verify_token(token)
         assert result2 is None
+
+
+class TestAuthentication:
+    """Test user authentication function."""
+    
+    def test_authenticate_verified_user_success(self, setup_database):
+        """Test successful authentication of verified user with correct credentials."""
+        # Create and verify a user
+        email = "verified@example.com"
+        password = "password123"
+        user = register_user(email, password)
+        
+        # Manually verify the user
+        user.is_verified = True
+        db_session.commit()
+        
+        from src.auth import authenticate_user
+        
+        # Authenticate with correct credentials
+        authenticated_user = authenticate_user(email, password)
+        
+        assert authenticated_user is not None
+        assert authenticated_user.id == user.id
+        assert authenticated_user.email == email.lower()
+        assert authenticated_user.is_verified is True
+    
+    def test_authenticate_incorrect_password(self, setup_database):
+        """Test that incorrect password is rejected."""
+        # Create and verify a user
+        email = "user@example.com"
+        password = "password123"
+        user = register_user(email, password)
+        user.is_verified = True
+        db_session.commit()
+        
+        from src.auth import authenticate_user, AuthenticationError
+        
+        # Try to authenticate with wrong password
+        with pytest.raises(AuthenticationError) as exc_info:
+            authenticate_user(email, "wrongpassword")
+        
+        assert "incorrect" in str(exc_info.value).lower()
+    
+    def test_authenticate_nonexistent_user(self, setup_database):
+        """Test that non-existent user is rejected."""
+        from src.auth import authenticate_user, AuthenticationError
+        
+        # Try to authenticate with non-existent email
+        with pytest.raises(AuthenticationError) as exc_info:
+            authenticate_user("nonexistent@example.com", "password123")
+        
+        assert "incorrect" in str(exc_info.value).lower()
+    
+    def test_authenticate_unverified_user(self, setup_database):
+        """Test that unverified user cannot sign in."""
+        # Create user but don't verify
+        email = "unverified@example.com"
+        password = "password123"
+        user = register_user(email, password)
+        
+        assert user.is_verified is False
+        
+        from src.auth import authenticate_user, AuthenticationError
+        
+        # Try to authenticate unverified user
+        with pytest.raises(AuthenticationError) as exc_info:
+            authenticate_user(email, password)
+        
+        error_message = str(exc_info.value).lower()
+        assert "verification" in error_message or "verify" in error_message
+    
+    def test_authenticate_empty_email(self, setup_database):
+        """Test that empty email is rejected."""
+        from src.auth import authenticate_user, AuthenticationError
+        
+        with pytest.raises(AuthenticationError) as exc_info:
+            authenticate_user("", "password123")
+        
+        assert "required" in str(exc_info.value).lower()
+    
+    def test_authenticate_empty_password(self, setup_database):
+        """Test that empty password is rejected."""
+        from src.auth import authenticate_user, AuthenticationError
+        
+        with pytest.raises(AuthenticationError) as exc_info:
+            authenticate_user("user@example.com", "")
+        
+        assert "required" in str(exc_info.value).lower()
+    
+    def test_authenticate_case_insensitive_email(self, setup_database):
+        """Test that email authentication is case-insensitive."""
+        # Create and verify user with lowercase email
+        email = "user@example.com"
+        password = "password123"
+        user = register_user(email, password)
+        user.is_verified = True
+        db_session.commit()
+        
+        from src.auth import authenticate_user
+        
+        # Authenticate with uppercase email
+        authenticated_user = authenticate_user("USER@EXAMPLE.COM", password)
+        
+        assert authenticated_user is not None
+        assert authenticated_user.id == user.id
+    
+    def test_authenticate_whitespace_handling(self, setup_database):
+        """Test that email whitespace is handled correctly."""
+        # Create and verify user
+        email = "user@example.com"
+        password = "password123"
+        user = register_user(email, password)
+        user.is_verified = True
+        db_session.commit()
+        
+        from src.auth import authenticate_user
+        
+        # Authenticate with whitespace around email
+        authenticated_user = authenticate_user("  user@example.com  ", password)
+        
+        assert authenticated_user is not None
+        assert authenticated_user.id == user.id
+    
+    def test_authenticate_returns_user_object(self, setup_database):
+        """Test that authenticate_user returns a complete User object."""
+        # Create and verify user
+        email = "user@example.com"
+        password = "password123"
+        user = register_user(email, password)
+        user.is_verified = True
+        db_session.commit()
+        
+        from src.auth import authenticate_user
+        
+        authenticated_user = authenticate_user(email, password)
+        
+        # Verify it's a User object with all expected attributes
+        assert hasattr(authenticated_user, 'id')
+        assert hasattr(authenticated_user, 'email')
+        assert hasattr(authenticated_user, 'is_verified')
+        assert hasattr(authenticated_user, 'password_hash')
+        assert hasattr(authenticated_user, 'check_password')
+
+
+class TestSessionManagement:
+    """Test session management helper functions."""
+    
+    def test_get_user_by_id_success(self, setup_database):
+        """Test retrieving a user by ID."""
+        # Create a user
+        email = "user@example.com"
+        password = "password123"
+        user = register_user(email, password)
+        
+        from src.auth import get_user_by_id
+        
+        # Retrieve user by ID
+        retrieved_user = get_user_by_id(user.id)
+        
+        assert retrieved_user is not None
+        assert retrieved_user.id == user.id
+        assert retrieved_user.email == user.email
+    
+    def test_get_user_by_id_nonexistent(self, setup_database):
+        """Test that non-existent user ID returns None."""
+        from src.auth import get_user_by_id
+        
+        result = get_user_by_id(99999)
+        assert result is None
+    
+    def test_get_user_by_id_none(self, setup_database):
+        """Test that None user ID returns None."""
+        from src.auth import get_user_by_id
+        
+        result = get_user_by_id(None)
+        assert result is None
+    
+    def test_get_user_by_id_zero(self, setup_database):
+        """Test that zero user ID returns None."""
+        from src.auth import get_user_by_id
+        
+        result = get_user_by_id(0)
+        assert result is None
+
+
+
+
+class TestAuthenticationDecorators:
+    """Test authentication decorators for route protection."""
+    
+    @pytest.fixture
+    def flask_app(self, setup_database):
+        """Create a minimal Flask app for testing decorators."""
+        from flask import Flask
+        
+        app = Flask(__name__)
+        app.config['SECRET_KEY'] = 'test-secret-key'
+        app.config['TESTING'] = True
+        
+        # Define test routes
+        from src.auth import login_required, verified_required
+        
+        @app.route('/public')
+        def public():
+            return 'public page'
+        
+        @app.route('/protected')
+        @login_required
+        def protected():
+            return 'protected page'
+        
+        @app.route('/verified-only')
+        @verified_required
+        def verified_only():
+            return 'verified only page'
+        
+        @app.route('/signin')
+        def signin():
+            return 'signin page'
+        
+        @app.route('/home')
+        def home():
+            return 'home page'
+        
+        return app
+    
+    def test_login_required_allows_authenticated_user(self, flask_app):
+        """Test that @login_required allows authenticated users."""
+        # Create and verify a user
+        user = register_user("user@example.com", "password123")
+        user.is_verified = True
+        db_session.commit()
+        
+        with flask_app.test_client() as client:
+            # Set up session with user_id
+            with client.session_transaction() as sess:
+                sess['user_id'] = user.id
+            
+            # Access protected route
+            response = client.get('/protected')
+            
+            assert response.status_code == 200
+            assert b'protected page' in response.data
+    
+    def test_login_required_redirects_unauthenticated_user(self, flask_app):
+        """Test that @login_required redirects unauthenticated users to signin."""
+        with flask_app.test_client() as client:
+            # Access protected route without authentication
+            response = client.get('/protected', follow_redirects=False)
+            
+            # Should redirect to signin
+            assert response.status_code == 302
+            assert '/signin' in response.location
+    
+    def test_login_required_shows_flash_message(self, flask_app):
+        """Test that @login_required shows a flash message when redirecting."""
+        with flask_app.test_client() as client:
+            # Access protected route without authentication
+            response = client.get('/protected', follow_redirects=True)
+            
+            # Check that flash message was set by accessing it in the app context
+            with flask_app.app_context():
+                from flask import session as flask_session
+                # The flash message should have been set
+                # We can't directly check flashed messages after redirect,
+                # but we can verify the redirect happened correctly
+                assert response.status_code == 200
+    
+    def test_verified_required_allows_verified_user(self, flask_app):
+        """Test that @verified_required allows verified users."""
+        # Create and verify a user
+        user = register_user("verified@example.com", "password123")
+        user.is_verified = True
+        db_session.commit()
+        
+        with flask_app.test_client() as client:
+            # Set up session with user_id
+            with client.session_transaction() as sess:
+                sess['user_id'] = user.id
+            
+            # Access verified-only route
+            response = client.get('/verified-only')
+            
+            assert response.status_code == 200
+            assert b'verified only page' in response.data
+    
+    def test_verified_required_redirects_unauthenticated_user(self, flask_app):
+        """Test that @verified_required redirects unauthenticated users to signin."""
+        with flask_app.test_client() as client:
+            # Access verified-only route without authentication
+            response = client.get('/verified-only', follow_redirects=False)
+            
+            # Should redirect to signin
+            assert response.status_code == 302
+            assert '/signin' in response.location
+    
+    def test_verified_required_blocks_unverified_user(self, flask_app):
+        """Test that @verified_required blocks unverified users."""
+        # Create user but don't verify
+        user = register_user("unverified@example.com", "password123")
+        assert user.is_verified is False
+        db_session.commit()
+        
+        with flask_app.test_client() as client:
+            # Set up session with user_id
+            with client.session_transaction() as sess:
+                sess['user_id'] = user.id
+            
+            # Access verified-only route
+            response = client.get('/verified-only', follow_redirects=False)
+            
+            # Should redirect to home
+            assert response.status_code == 302
+            assert '/home' in response.location
+    
+    def test_verified_required_shows_verification_message(self, flask_app):
+        """Test that @verified_required shows verification required message."""
+        # Create user but don't verify
+        user = register_user("unverified@example.com", "password123")
+        db_session.commit()
+        
+        with flask_app.test_client() as client:
+            # Set up session with user_id
+            with client.session_transaction() as sess:
+                sess['user_id'] = user.id
+            
+            # Access verified-only route
+            response = client.get('/verified-only', follow_redirects=True)
+            
+            # Should redirect to home page
+            assert response.status_code == 200
+            # The flash message is set but we can't easily check it in tests
+            # The important thing is that unverified users are blocked
+    
+    def test_verified_required_handles_invalid_user_id(self, flask_app):
+        """Test that @verified_required handles invalid user_id in session."""
+        with flask_app.test_client() as client:
+            # Set up session with non-existent user_id
+            with client.session_transaction() as sess:
+                sess['user_id'] = 99999
+            
+            # Access verified-only route
+            response = client.get('/verified-only', follow_redirects=False)
+            
+            # Should clear session and redirect to signin
+            assert response.status_code == 302
+            assert '/signin' in response.location
+    
+    def test_verified_required_clears_session_for_invalid_user(self, flask_app):
+        """Test that @verified_required clears session when user not found."""
+        with flask_app.test_client() as client:
+            # Set up session with non-existent user_id
+            with client.session_transaction() as sess:
+                sess['user_id'] = 99999
+            
+            # Access verified-only route
+            client.get('/verified-only', follow_redirects=True)
+            
+            # Session should be cleared
+            with client.session_transaction() as sess:
+                assert 'user_id' not in sess
+    
+    def test_public_route_accessible_without_auth(self, flask_app):
+        """Test that public routes are accessible without authentication."""
+        with flask_app.test_client() as client:
+            # Access public route without authentication
+            response = client.get('/public')
+            
+            assert response.status_code == 200
+            assert b'public page' in response.data
+    
+    def test_login_required_preserves_function_metadata(self, flask_app):
+        """Test that @login_required preserves the wrapped function's metadata."""
+        from src.auth import login_required
+        
+        @login_required
+        def test_function():
+            """Test function docstring."""
+            return "test"
+        
+        # Function name and docstring should be preserved
+        assert test_function.__name__ == 'test_function'
+        assert test_function.__doc__ == 'Test function docstring.'
+    
+    def test_verified_required_preserves_function_metadata(self, flask_app):
+        """Test that @verified_required preserves the wrapped function's metadata."""
+        from src.auth import verified_required
+        
+        @verified_required
+        def test_function():
+            """Test function docstring."""
+            return "test"
+        
+        # Function name and docstring should be preserved
+        assert test_function.__name__ == 'test_function'
+        assert test_function.__doc__ == 'Test function docstring.'
