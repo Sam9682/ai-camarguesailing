@@ -1,0 +1,82 @@
+"""
+Flask application setup for Camargue Sailing website.
+
+This module initializes the Flask application with configuration,
+session management, static files, and templates.
+
+Requirements: 9.1, 9.3, 9.4, 9.5
+"""
+
+from flask import Flask
+from src.config import Config
+from src.database import db_session, close_db
+
+
+def create_app(config_class=Config):
+    """
+    Create and configure the Flask application.
+    
+    This factory function initializes the Flask app with:
+    - Configuration from environment variables
+    - Session management with secure cookies
+    - Static files and templates directories
+    - Database session cleanup
+    
+    Args:
+        config_class: Configuration class to use (default: Config)
+    
+    Returns:
+        Configured Flask application instance
+    
+    Requirements: 9.1, 9.3, 9.4, 9.5
+    """
+    # Initialize Flask app
+    app = Flask(
+        __name__,
+        template_folder='../templates',
+        static_folder='../static'
+    )
+    
+    # Load configuration
+    app.config.from_object(config_class)
+    
+    # Configure session management
+    # Flask uses SECRET_KEY for signing session cookies
+    app.config['SESSION_COOKIE_SECURE'] = False  # Set to True in production with HTTPS
+    app.config['SESSION_COOKIE_HTTPONLY'] = True  # Prevent JavaScript access to session cookie
+    app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'  # CSRF protection
+    app.config['PERMANENT_SESSION_LIFETIME'] = 3600  # Session expires after 1 hour
+    
+    # Register teardown function to close database session after each request
+    @app.teardown_appcontext
+    def shutdown_session(exception=None):
+        """
+        Close database session at the end of each request.
+        
+        This ensures database connections are properly cleaned up
+        and prevents connection leaks.
+        
+        Args:
+            exception: Any exception that occurred during the request
+        """
+        close_db()
+    
+    # Register blueprints (routes) here when they are created
+    # Example:
+    # from src.routes import public_bp, auth_bp, booking_bp, forum_bp
+    # app.register_blueprint(public_bp)
+    # app.register_blueprint(auth_bp)
+    # app.register_blueprint(booking_bp)
+    # app.register_blueprint(forum_bp)
+    
+    return app
+
+
+# Create the application instance
+app = create_app()
+
+
+if __name__ == '__main__':
+    # Run the development server
+    # In production, use a WSGI server like Gunicorn instead
+    app.run(host='0.0.0.0', port=5000, debug=True)

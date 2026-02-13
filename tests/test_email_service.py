@@ -332,3 +332,187 @@ def test_send_booking_confirmation_exception_handling(app, mock_user):
     result = send_booking_confirmation(invalid_booking, mock_user)
     
     assert result is False
+
+
+# Tests for retry logic and exponential backoff (Task 4.4)
+
+def test_send_email_retry_success_on_second_attempt(app):
+    """Test that email sending succeeds on retry after initial failure."""
+    init_mail(app)
+    
+    # Mock the mail.send method to fail once, then succeed
+    call_count = 0
+    def mock_send_with_retry(msg):
+        nonlocal call_count
+        call_count += 1
+        if call_count == 1:
+            raise Exception("Temporary SMTP error")
+        # Second call succeeds (no exception)
+    
+    with patch('src.email_service.mail.send', side_effect=mock_send_with_retry):
+        with patch('time.sleep'):  # Mock sleep to speed up test
+            result = send_email(
+                to="recipient@example.com",
+                subject="Test Subject",
+                body="Test body content"
+            )
+            
+            assert result is True
+            assert call_count == 2
+
+
+def test_send_email_retry_exhausted(app):
+    """Test that email sending fails after exhausting all retries."""
+    init_mail(app)
+    
+    # Mock the mail.send method to always fail
+    call_count = 0
+    def mock_send_always_fail(msg):
+        nonlocal call_count
+        call_count += 1
+        raise Exception("Persistent SMTP error")
+    
+    with patch('src.email_service.mail.send', side_effect=mock_send_always_fail):
+        with patch('time.sleep'):  # Mock sleep to speed up test
+            result = send_email(
+                to="recipient@example.com",
+                subject="Test Subject",
+                body="Test body content",
+                max_retries=3
+            )
+            
+            assert result is False
+            assert call_count == 3
+
+
+def test_send_email_exponential_backoff(app):
+    """Test that exponential backoff is applied between retries."""
+    init_mail(app)
+    
+    # Mock the mail.send method to always fail
+    def mock_send_always_fail(msg):
+        raise Exception("SMTP error")
+    
+    sleep_times = []
+    def mock_sleep(seconds):
+        sleep_times.append(seconds)
+    
+    with patch('src.email_service.mail.send', side_effect=mock_send_always_fail):
+        with patch('time.sleep', side_effect=mock_sleep):
+            result = send_email(
+                to="recipient@example.com",
+                subject="Test Subject",
+                body="Test body content",
+                max_retries=3
+            )
+            
+            assert result is False
+            # Should have 2 sleep calls (after 1st and 2nd failures, not after 3rd)
+            assert len(sleep_times) == 2
+            # Exponential backoff: 2^0=1, 2^1=2
+            assert sleep_times[0] == 1
+            assert sleep_times[1] == 2
+
+
+def test_send_email_custom_max_retries(app):
+    """Test that custom max_retries parameter is respected."""
+    init_mail(app)
+    
+    call_count = 0
+    def mock_send_always_fail(msg):
+        nonlocal call_count
+        call_count += 1
+        raise Exception("SMTP error")
+    
+    with patch('src.email_service.mail.send', side_effect=mock_send_always_fail):
+        with patch('time.sleep'):  # Mock sleep to speed up test
+            result = send_email(
+                to="recipient@example.com",
+                subject="Test Subject",
+                body="Test body content",
+                max_retries=5
+            )
+            
+            assert result is False
+            assert call_count == 5
+
+
+def test_send_email_logs_retry_attempts(app, caplog):
+    """Test that retry attempts are properly logged."""
+    import logging
+    init_mail(app)
+    
+    call_count = 0
+    def mock_send_with_retry(msg):
+        nonlocal call_count
+        call_count += 1
+        if call_count < 3:
+            raise Exception("Temporary SMTP error")
+        # Third call succeeds
+    
+    with caplog.at_level(logging.ERROR):
+        with patch('src.email_service.mail.send', side_effect=mock_send_with_retry):
+            with patch('time.sleep'):  # Mock sleep to speed up test
+                result = send_email(
+                    to="recipient@example.com",
+                    subject="Test Subject",
+                    body="Test body content"
+                )
+                
+                assert result is True
+                # Should have logged 2 failures before success
+                error_logs = [record for record in caplog.records if record.levelname == 'ERROR']
+                assert len(error_logs) == 2
+                assert "attempt 1/3" in error_logs[0].message
+                assert "attempt 2/3" in error_logs[1].message
+
+
+def test_send_email_logs_final_failure(app, caplog):
+    """Test that final failure after all retries is properly logged."""
+    import logging
+    init_mail(app)
+    
+    def mock_send_always_fail(msg):
+        raise Exception("Persistent SMTP error")
+    
+    with caplog.at_level(logging.ERROR):
+        with patch('src.email_service.mail.send', side_effect=mock_send_always_fail):
+            with patch('time.sleep'):  # Mock sleep to speed up test
+                result = send_email(
+                    to="recipient@example.com",
+                    subject="Test Subject",
+                    body="Test body content",
+                    max_retries=3
+                )
+                
+                assert result is False
+                # Should have logged 3 attempt failures + 1 final failure message
+                error_logs = [record for record in caplog.records if record.levelname == 'ERROR']
+                assert len(error_logs) == 4
+                # Check final failure message
+                assert "Failed to send email to recipient@example.com after 3 attempts" in error_logs[-1].message
+                assert "Last error" in error_logs[-1].message
+
+
+def test_send_email_logs_exception_type(app, caplog):
+    """Test that exception type is logged for debugging."""
+    import logging
+    init_mail(app)
+    
+    def mock_send_with_specific_error(msg):
+        raise ConnectionError("Connection refused")
+    
+    with caplog.at_level(logging.ERROR):
+        with patch('src.email_service.mail.send', side_effect=mock_send_with_specific_error):
+            with patch('time.sleep'):  # Mock sleep to speed up test
+                result = send_email(
+                    to="recipient@example.com",
+                    subject="Test Subject",
+                    body="Test body content"
+                )
+                
+                assert result is False
+                # Check that exception type is logged
+                error_logs = [record for record in caplog.records if record.levelname == 'ERROR']
+                assert any("ConnectionError" in log.message for log in error_logs)
+                assert any("Connection refused" in log.message for log in error_logs)

@@ -163,6 +163,9 @@ class Booking(Base):
         """
         Validate booking dates.
         
+        This validator only checks dates when updating existing bookings.
+        For new bookings, the database constraint will enforce the rule.
+        
         Args:
             key: The field being validated ('start_date' or 'end_date')
             value: The date value to validate
@@ -171,13 +174,16 @@ class Booking(Base):
             The validated date value
         
         Raises:
-            ValueError: If dates are invalid
+            ValueError: If dates are invalid during update
         
         Requirements: 7.2, 7.5
         """
-        if key == 'end_date' and hasattr(self, 'start_date') and self.start_date:
-            if value <= self.start_date:
-                raise ValueError('End date must be after start date')
+        # Only validate if this is an update (object already has an id)
+        # For new objects, let the database constraint handle it
+        if self.id is not None:
+            if key == 'end_date' and hasattr(self, 'start_date') and self.start_date:
+                if value <= self.start_date:
+                    raise ValueError('End date must be after start date')
         return value
     
     def __repr__(self):

@@ -12,6 +12,7 @@ from flask import Flask
 from flask_mail import Mail, Message
 from typing import Optional
 import logging
+import time
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -33,19 +34,21 @@ def init_mail(app: Flask) -> None:
     logger.info("Flask-Mail initialized successfully")
 
 
-def send_email(to: str, subject: str, body: str, html: Optional[str] = None) -> bool:
+def send_email(to: str, subject: str, body: str, html: Optional[str] = None, max_retries: int = 3) -> bool:
     """
-    Send an email using Flask-Mail.
+    Send an email using Flask-Mail with retry logic and exponential backoff.
     
     This function sends an email to the specified recipient with the given
     subject and body. It uses SMTP settings configured in the Flask app
-    via environment variables.
+    via environment variables. If sending fails, it will retry up to max_retries
+    times with exponential backoff.
     
     Args:
         to: Recipient email address
         subject: Email subject line
         body: Plain text email body
         html: Optional HTML email body
+        max_retries: Maximum number of retry attempts (default: 3)
     
     Returns:
         bool: True if email was sent successfully, False otherwise
@@ -53,27 +56,57 @@ def send_email(to: str, subject: str, body: str, html: Optional[str] = None) -> 
     Raises:
         ValueError: If mail is not initialized
     
-    Requirements: 10.1, 10.5
+    Requirements: 10.1, 10.4, 10.5
     """
     if mail is None:
         logger.error("Flask-Mail not initialized. Call init_mail() first.")
         raise ValueError("Flask-Mail not initialized. Call init_mail() first.")
     
-    try:
-        msg = Message(
-            subject=subject,
-            recipients=[to],
-            body=body,
-            html=html
-        )
-        
-        mail.send(msg)
-        logger.info(f"Email sent successfully to {to}")
-        return True
-        
-    except Exception as e:
-        logger.error(f"Failed to send email to {to}: {str(e)}")
-        return False
+    attempt = 0
+    last_exception = None
+    
+    while attempt < max_retries:
+        try:
+            msg = Message(
+                subject=subject,
+                recipients=[to],
+                body=body,
+                html=html
+            )
+            
+            mail.send(msg)
+            
+            if attempt > 0:
+                logger.info(f"Email sent successfully to {to} after {attempt + 1} attempt(s)")
+            else:
+                logger.info(f"Email sent successfully to {to}")
+            
+            return True
+            
+        except Exception as e:
+            attempt += 1
+            last_exception = e
+            
+            # Log the failure with details
+            logger.error(
+                f"Failed to send email to {to} (attempt {attempt}/{max_retries}): "
+                f"{type(e).__name__}: {str(e)}"
+            )
+            
+            # If we haven't exhausted retries, wait with exponential backoff
+            if attempt < max_retries:
+                # Exponential backoff: 2^(attempt-1) seconds (1s, 2s, 4s, ...)
+                backoff_time = 2 ** (attempt - 1)
+                logger.info(f"Retrying in {backoff_time} seconds...")
+                time.sleep(backoff_time)
+    
+    # All retries exhausted
+    logger.error(
+        f"Failed to send email to {to} after {max_retries} attempts. "
+        f"Last error: {type(last_exception).__name__}: {str(last_exception)}"
+    )
+    
+    return False
 
 
 def send_verification_email(user, base_url: str) -> bool:
