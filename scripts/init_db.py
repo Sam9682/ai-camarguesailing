@@ -54,7 +54,8 @@ def init_database():
         Base.metadata.create_all(bind=engine)
         
         # Verify tables were created
-        inspector = engine.dialect.get_inspector(engine)
+        from sqlalchemy import inspect
+        inspector = inspect(engine)
         tables = inspector.get_table_names()
         
         expected_tables = ['users', 'verification_tokens', 'bookings', 'forum_posts', 'forum_replies']
