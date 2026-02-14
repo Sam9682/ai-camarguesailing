@@ -7,9 +7,10 @@ session management, static files, and templates.
 Requirements: 9.1, 9.3, 9.4, 9.5
 """
 
-from flask import Flask
+from flask import Flask, session, redirect, url_for, request
 from src.config import Config
 from src.database import db_session, close_db
+from src.i18n import init_babel
 
 
 def create_app(config_class=Config):
@@ -39,6 +40,14 @@ def create_app(config_class=Config):
     
     # Load configuration
     app.config.from_object(config_class)
+    
+    # Initialize Flask-Babel for internationalization
+    init_babel(app)
+    
+    # Configure Babel
+    app.config['BABEL_TRANSLATION_DIRECTORIES'] = '../translations'
+    app.config['BABEL_DEFAULT_LOCALE'] = 'en'
+    app.config['BABEL_SUPPORTED_LOCALES'] = ['en', 'fr']
     
     # Configure session management
     # Flask uses SECRET_KEY for signing session cookies
@@ -75,6 +84,24 @@ def create_app(config_class=Config):
         """Test route to verify base.html template rendering."""
         from flask import render_template
         return render_template('test_base.html')
+    
+    # Language switching route
+    @app.route('/set-language/<lang>')
+    def set_language(lang):
+        """
+        Set the user's preferred language.
+        
+        This route stores the selected language in the session and redirects
+        back to the referring page or home page.
+        
+        Args:
+            lang: Language code ('en' or 'fr')
+        """
+        if lang in ['en', 'fr']:
+            session['language'] = lang
+        
+        # Redirect back to the referring page or home
+        return redirect(request.referrer or url_for('home'))
     
     # Public routes
     @app.route('/')

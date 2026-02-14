@@ -1,20 +1,18 @@
 {% extends "base.html" %}
 
-{% block title %}Home - Camargue Sailing{% endblock %}
+{% block title %}{{ _('Home') }} - Camargue Sailing{% endblock %}
 
 {% block content %}
 <div class="hero-section">
     <div class="hero-content">
-        <h1>Welcome to Camargue Sailing</h1>
-        <p class="hero-subtitle">Experience the Magic of the Mediterranean</p>
+        <h1>{{ _('Welcome to Camargue Sailing') }}</h1>
+        <p class="hero-subtitle">{{ _('Experience the Magic of the Mediterranean') }}</p>
         <p class="hero-description">
-            Discover the beauty of the South of France aboard our AMEL sailing yacht. 
-            Join us for unforgettable one-week voyages departing from Saintes-Maries-de-la-Mer 
-            in the heart of the Camargue region.
+            {{ _('Discover the beauty of the South of France aboard our AMEL sailing yacht. Join us for unforgettable one-week voyages departing from Saintes-Maries-de-la-Mer in the heart of the Camargue region.') }}
         </p>
         <div class="hero-buttons">
-            <a href="/voyages" class="btn btn-primary btn-large">Explore Voyages</a>
-            <a href="/voyage-options" class="btn btn-secondary btn-large">View Options</a>
+            <a href="/voyages" class="btn btn-primary btn-large">{{ _('Explore Voyages') }}</a>
+            <a href="/voyage-options" class="btn btn-secondary btn-large">{{ _('View Options') }}</a>
         </div>
     </div>
     <div class="hero-image">
@@ -24,27 +22,27 @@
 
 <section class="features-section">
     <div class="container">
-        <h2>Why Choose Camargue Sailing?</h2>
+        <h2>{{ _('Why Choose Camargue Sailing?') }}</h2>
         <div class="features-grid">
             <div class="feature-card">
                 <div class="feature-icon">⛵</div>
-                <h3>Premium AMEL Yacht</h3>
-                <p>Sail aboard a comfortable and well-equipped AMEL yacht, renowned for its seaworthiness and comfort.</p>
+                <h3>{{ _('Premium AMEL Yacht') }}</h3>
+                <p>{{ _('Sail aboard a comfortable and well-equipped AMEL yacht, renowned for its seaworthiness and comfort.') }}</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">🌊</div>
-                <h3>Mediterranean Beauty</h3>
-                <p>Explore the stunning coastline of the South of France, from the Camargue to hidden coves and charming ports.</p>
+                <h3>{{ _('Mediterranean Beauty') }}</h3>
+                <p>{{ _('Explore the stunning coastline of the South of France, from the Camargue to hidden coves and charming ports.') }}</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">👨‍✈️</div>
-                <h3>Expert Skipper</h3>
-                <p>Benefit from the experience and local knowledge of our professional skipper for a safe and enriching voyage.</p>
+                <h3>{{ _('Expert Skipper') }}</h3>
+                <p>{{ _('Benefit from the experience and local knowledge of our professional skipper for a safe and enriching voyage.') }}</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">🗓️</div>
-                <h3>One-Week Voyages</h3>
-                <p>Perfect duration to disconnect, relax, and fully immerse yourself in the sailing experience.</p>
+                <h3>{{ _('One-Week Voyages') }}</h3>
+                <p>{{ _('Perfect duration to disconnect, relax, and fully immerse yourself in the sailing experience.') }}</p>
             </div>
         </div>
     </div>
@@ -54,24 +52,18 @@
     <div class="container">
         <div class="about-content">
             <div class="about-text">
-                <h2>About Our Sailing Business</h2>
+                <h2>{{ _('About Our Sailing Business') }}</h2>
                 <p>
-                    Camargue Sailing offers authentic sailing experiences in the South of France. 
-                    Based in Saintes-Maries-de-la-Mer, we provide one-week sailing voyages that 
-                    combine adventure, relaxation, and discovery.
+                    {{ _('Camargue Sailing offers authentic sailing experiences in the South of France. Based in Saintes-Maries-de-la-Mer, we provide one-week sailing voyages that combine adventure, relaxation, and discovery.') }}
                 </p>
                 <p>
-                    Our AMEL yacht is perfectly suited for comfortable cruising along the Mediterranean 
-                    coast. Whether you're an experienced sailor or a complete beginner, our voyages 
-                    are designed to provide an unforgettable experience.
+                    {{ _('Our AMEL yacht is perfectly suited for comfortable cruising along the Mediterranean coast. Whether you\'re an experienced sailor or a complete beginner, our voyages are designed to provide an unforgettable experience.') }}
                 </p>
                 <p>
-                    From the wild beauty of the Camargue to the azure waters of the Mediterranean, 
-                    each voyage is a unique adventure. Join us to discover hidden beaches, charming 
-                    coastal villages, and the freedom of life at sea.
+                    {{ _('From the wild beauty of the Camargue to the azure waters of the Mediterranean, each voyage is a unique adventure. Join us to discover hidden beaches, charming coastal villages, and the freedom of life at sea.') }}
                 </p>
                 <div class="about-cta">
-                    <a href="/camargue" class="btn btn-primary">Discover the Camargue</a>
+                    <a href="/camargue" class="btn btn-primary">{{ _('Discover the Camargue') }}</a>
                 </div>
             </div>
             <div class="about-images">
@@ -83,14 +75,14 @@
 
 <section class="cta-section">
     <div class="container">
-        <h2>Ready to Set Sail?</h2>
-        <p>Join our community of sailors and book your next adventure</p>
+        <h2>{{ _('Ready to Set Sail?') }}</h2>
+        <p>{{ _('Join our community of sailors and book your next adventure') }}</p>
         <div class="cta-buttons">
             {% if session.get('user_id') %}
-                <a href="/calendar" class="btn btn-primary btn-large">View Calendar</a>
+                <a href="/calendar" class="btn btn-primary btn-large">{{ _('View Calendar') }}</a>
             {% else %}
-                <a href="/signup" class="btn btn-primary btn-large">Sign Up Now</a>
-                <a href="/signin" class="btn btn-secondary btn-large">Sign In</a>
+                <a href="/signup" class="btn btn-primary btn-large">{{ _('Sign Up Now') }}</a>
+                <a href="/signin" class="btn btn-secondary btn-large">{{ _('Sign In') }}</a>
             {% endif %}
         </div>
     </div>

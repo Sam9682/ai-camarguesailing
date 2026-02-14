@@ -1,6 +1,8 @@
 # Flask web framework
 Flask==3.0.0
 Werkzeug==3.0.1
+Flask-Babel==4.0.0
+Babel==2.14.0
 
 # Database
 SQLAlchemy==2.0.23

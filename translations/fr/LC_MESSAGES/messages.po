@@ -1,0 +1,142 @@
+# French translations for Camargue Sailing.
+# Copyright (C) 2026 Camargue Sailing
+# This file is distributed under the same license as the Camargue Sailing project.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-02-14 12:00+0000\n"
+"PO-Revision-Date: 2024-02-14 12:00+0000\n"
+"Last-Translator: \n"
+"Language: fr\n"
+"Language-Team: French\n"
+"Plural-Forms: nplurals=2; plural=(n > 1)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel\n"
+
+# Navigation
+msgid "Home"
+msgstr "Accueil"
+
+msgid "Voyages"
+msgstr "Voyages"
+
+msgid "Camargue"
+msgstr "Camargue"
+
+msgid "Voyage Options"
+msgstr "Options de Voyage"
+
+msgid "Calendar"
+msgstr "Calendrier"
+
+msgid "Forum"
+msgstr "Forum"
+
+# Authentication
+msgid "Sign In"
+msgstr "Se Connecter"
+
+msgid "Sign Up"
+msgstr "S'inscrire"
+
+msgid "Sign Out"
+msgstr "Se Déconnecter"
+
+msgid "Welcome"
+msgstr "Bienvenue"
+
+msgid "Unverified"
+msgstr "Non vérifié"
+
+# Home Page
+msgid "Welcome to Camargue Sailing"
+msgstr "Bienvenue à Camargue Sailing"
+
+msgid "Experience the Magic of the Mediterranean"
+msgstr "Découvrez la Magie de la Méditerranée"
+
+msgid "Discover the beauty of the South of France aboard our AMEL sailing yacht. Join us for unforgettable one-week voyages departing from Saintes-Maries-de-la-Mer in the heart of the Camargue region."
+msgstr "Découvrez la beauté du Sud de la France à bord de notre voilier AMEL. Rejoignez-nous pour des voyages inoubliables d'une semaine au départ de Saintes-Maries-de-la-Mer au cœur de la Camargue."
+
+msgid "Explore Voyages"
+msgstr "Explorer les Voyages"
+
+msgid "View Options"
+msgstr "Voir les Options"
+
+msgid "Why Choose Camargue Sailing?"
+msgstr "Pourquoi Choisir Camargue Sailing ?"
+
+msgid "Premium AMEL Yacht"
+msgstr "Voilier AMEL Premium"
+
+msgid "Sail aboard a comfortable and well-equipped AMEL yacht, renowned for its seaworthiness and comfort."
+msgstr "Naviguez à bord d'un voilier AMEL confortable et bien équipé, réputé pour sa navigabilité et son confort."
+
+msgid "Mediterranean Beauty"
+msgstr "Beauté Méditerranéenne"
+
+msgid "Explore the stunning coastline of the South of France, from the Camargue to hidden coves and charming ports."
+msgstr "Explorez le magnifique littoral du Sud de la France, de la Camargue aux criques cachées et aux ports charmants."
+
+msgid "Expert Skipper"
+msgstr "Skipper Expert"
+
+msgid "Benefit from the experience and local knowledge of our professional skipper for a safe and enriching voyage."
+msgstr "Profitez de l'expérience et de la connaissance locale de notre skipper professionnel pour un voyage sûr et enrichissant."
+
+msgid "One-Week Voyages"
+msgstr "Voyages d'une Semaine"
+
+msgid "Perfect duration to disconnect, relax, and fully immerse yourself in the sailing experience."
+msgstr "Durée parfaite pour se déconnecter, se détendre et s'immerger pleinement dans l'expérience de la voile."
+
+msgid "About Our Sailing Business"
+msgstr "À Propos de Notre Entreprise de Voile"
+
+msgid "Camargue Sailing offers authentic sailing experiences in the South of France. Based in Saintes-Maries-de-la-Mer, we provide one-week sailing voyages that combine adventure, relaxation, and discovery."
+msgstr "Camargue Sailing propose des expériences de voile authentiques dans le Sud de la France. Basés à Saintes-Maries-de-la-Mer, nous proposons des voyages en voilier d'une semaine qui combinent aventure, détente et découverte."
+
+msgid "Our AMEL yacht is perfectly suited for comfortable cruising along the Mediterranean coast. Whether you're an experienced sailor or a complete beginner, our voyages are designed to provide an unforgettable experience."
+msgstr "Notre voilier AMEL est parfaitement adapté pour une croisière confortable le long de la côte méditerranéenne. Que vous soyez un marin expérimenté ou un débutant complet, nos voyages sont conçus pour offrir une expérience inoubliable."
+
+msgid "From the wild beauty of the Camargue to the azure waters of the Mediterranean, each voyage is a unique adventure. Join us to discover hidden beaches, charming coastal villages, and the freedom of life at sea."
+msgstr "De la beauté sauvage de la Camargue aux eaux azurées de la Méditerranée, chaque voyage est une aventure unique. Rejoignez-nous pour découvrir des plages cachées, de charmants villages côtiers et la liberté de la vie en mer."
+
+msgid "Discover the Camargue"
+msgstr "Découvrir la Camargue"
+
+msgid "Ready to Set Sail?"
+msgstr "Prêt à Prendre la Mer ?"
+
+msgid "Join our community of sailors and book your next adventure"
+msgstr "Rejoignez notre communauté de marins et réservez votre prochaine aventure"
+
+msgid "View Calendar"
+msgstr "Voir le Calendrier"
+
+msgid "Sign Up Now"
+msgstr "S'inscrire Maintenant"
+
+# Footer
+msgid "Experience the beauty of the South of France on our AMEL sailing voyages."
+msgstr "Découvrez la beauté du Sud de la France lors de nos voyages en voilier AMEL."
+
+msgid "Quick Links"
+msgstr "Liens Rapides"
+
+msgid "Contact"
+msgstr "Contact"
+
+msgid "Saintes-Maries-de-la-Mer, France"
+msgstr "Saintes-Maries-de-la-Mer, France"
+
+msgid "Email"
+msgstr "Email"
+
+msgid "All rights reserved"
+msgstr "Tous droits réservés"

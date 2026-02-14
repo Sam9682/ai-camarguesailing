@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ get_locale() }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,32 +19,39 @@
                 </div>
                 
                 <ul class="nav-menu">
-                    <li><a href="/">Home</a></li>
-                    <li><a href="/voyages">Voyages</a></li>
-                    <li><a href="/camargue">Camargue</a></li>
-                    <li><a href="/voyage-options">Voyage Options</a></li>
+                    <li><a href="/">{{ _('Home') }}</a></li>
+                    <li><a href="/voyages">{{ _('Voyages') }}</a></li>
+                    <li><a href="/camargue">{{ _('Camargue') }}</a></li>
+                    <li><a href="/voyage-options">{{ _('Voyage Options') }}</a></li>
                     
                     {% if session.get('user_id') %}
                         {# Authenticated user menu #}
-                        <li><a href="/calendar">Calendar</a></li>
-                        <li><a href="/forum">Forum</a></li>
+                        <li><a href="/calendar">{{ _('Calendar') }}</a></li>
+                        <li><a href="/forum">{{ _('Forum') }}</a></li>
                     {% endif %}
                 </ul>
                 
                 <div class="nav-auth">
+                    {# Language switcher #}
+                    <div class="language-switcher">
+                        <a href="{{ url_for('set_language', lang='en') }}" class="lang-link {% if get_locale() == 'en' %}active{% endif %}">EN</a>
+                        <span class="lang-separator">|</span>
+                        <a href="{{ url_for('set_language', lang='fr') }}" class="lang-link {% if get_locale() == 'fr' %}active{% endif %}">FR</a>
+                    </div>
+                    
                     {% if session.get('user_id') %}
                         {# User is authenticated #}
                         <span class="auth-status">
-                            Welcome, {{ session.get('user_email', 'User') }}
+                            {{ _('Welcome') }}, {{ session.get('user_email', 'User') }}
                             {% if not session.get('is_verified') %}
-                                <span class="unverified-badge">(Unverified)</span>
+                                <span class="unverified-badge">({{ _('Unverified') }})</span>
                             {% endif %}
                         </span>
-                        <a href="/signout" class="btn btn-secondary">Sign Out</a>
+                        <a href="/signout" class="btn btn-secondary">{{ _('Sign Out') }}</a>
                     {% else %}
                         {# Guest user #}
-                        <a href="/signin" class="btn btn-primary">Sign In</a>
-                        <a href="/signup" class="btn btn-secondary">Sign Up</a>
+                        <a href="/signin" class="btn btn-primary">{{ _('Sign In') }}</a>
+                        <a href="/signup" class="btn btn-secondary">{{ _('Sign Up') }}</a>
                     {% endif %}
                 </div>
             </div>
@@ -71,24 +78,24 @@
         <div class="footer-container">
             <div class="footer-section">
                 <h3>Camargue Sailing</h3>
-                <p>Experience the beauty of the South of France on our AMEL sailing voyages.</p>
+                <p>{{ _('Experience the beauty of the South of France on our AMEL sailing voyages.') }}</p>
             </div>
             <div class="footer-section">
-                <h3>Quick Links</h3>
+                <h3>{{ _('Quick Links') }}</h3>
                 <ul>
-                    <li><a href="/">Home</a></li>
-                    <li><a href="/voyages">Voyages</a></li>
-                    <li><a href="/camargue">Camargue</a></li>
+                    <li><a href="/">{{ _('Home') }}</a></li>
+                    <li><a href="/voyages">{{ _('Voyages') }}</a></li>
+                    <li><a href="/camargue">{{ _('Camargue') }}</a></li>
                 </ul>
             </div>
             <div class="footer-section">
-                <h3>Contact</h3>
-                <p>Saintes-Maries-de-la-Mer, France</p>
-                <p>Email: info@camarguesailing.com</p>
+                <h3>{{ _('Contact') }}</h3>
+                <p>{{ _('Saintes-Maries-de-la-Mer, France') }}</p>
+                <p>{{ _('Email') }}: info@camarguesailing.com</p>
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2024 Camargue Sailing. All rights reserved.</p>
+            <p>&copy; 2026 Camargue Sailing. {{ _('All rights reserved') }}.</p>
         </div>
     </footer>
 

@@ -9,6 +9,9 @@ done
 
 echo "Database is ready!"
 
+echo "Compiling translations..."
+python scripts/compile_translations.py
+
 echo "Initializing database tables..."
 python scripts/init_db.py
 
