@@ -29,6 +29,7 @@ instance/
 
 # Environment variables
 .env
+.env.prod
 
 # IDE
 .vscode/
@@ -49,3 +50,10 @@ htmlcov/
 # OS
 .DS_Store
 Thumbs.db
+
+# SwAutoMorph specific
+ssl/privkey*.pem
+ssl/privateKey*.key
+ssl/fullchain*.crt
+conf/nginx.conf
+logs/
