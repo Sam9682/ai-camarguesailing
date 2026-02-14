@@ -213,19 +213,129 @@ def create_app(config_class=Config):
             flash('An unexpected error occurred. Please try again later.', 'error')
             return render_template('signup.html'), 500
     
-    @app.route('/signin', methods=['GET'])
+    @app.route('/verify/<token>')
+    def verify_email(token):
+        """
+        Email verification route.
+        
+        This route handles email verification by validating the token and marking
+        the user's account as verified. On success, redirects to login page with
+        a success message. On failure, displays an error message.
+        
+        Args:
+            token: The verification token from the email link
+        
+        Requirements: 3.3, 3.4
+        """
+        from flask import redirect, url_for, flash
+        from src.auth import verify_token
+        
+        # Attempt to verify the token
+        user_id = verify_token(token)
+        
+        if user_id:
+            # Verification successful
+            flash('Email verified successfully! You can now sign in.', 'success')
+            return redirect(url_for('signin'))
+        else:
+            # Verification failed (invalid or expired token)
+            flash('Invalid or expired verification link. Please request a new verification email.', 'error')
+            return redirect(url_for('home'))
+    
+    @app.route('/signin', methods=['GET', 'POST'])
     def signin():
         """
-        Sign-in route placeholder.
+        Sign-in route for user authentication.
         
-        This is a temporary placeholder that will be implemented in task 7.3.
-        For now, it just displays a simple message.
+        GET: Display login form with email and password fields
+        POST: Handle authentication submission, create session for verified users
         
-        Requirements: 4.1
+        This route validates credentials, checks email verification status,
+        and creates a session for authenticated users.
+        
+        Requirements: 4.1, 4.2, 4.3, 4.4
         """
-        from flask import render_template
-        # TODO: Implement full sign-in functionality in task 7.3
-        return '<h1>Sign In</h1><p>Sign-in functionality will be implemented in task 7.3</p><p><a href="/">Back to Home</a></p>'
+        from flask import render_template, request, redirect, url_for, flash, session
+        from src.auth import authenticate_user, AuthenticationError
+        
+        # If user is already logged in, redirect to home
+        if session.get('user_id'):
+            flash('You are already logged in.', 'info')
+            return redirect(url_for('home'))
+        
+        if request.method == 'GET':
+            # Display login form
+            return render_template('signin.html')
+        
+        # Handle POST request - authentication submission
+        email = request.form.get('email', '').strip()
+        password = request.form.get('password', '')
+        
+        errors = {}
+        
+        try:
+            # Attempt to authenticate the user
+            user = authenticate_user(email, password)
+            
+            # Authentication successful - create session
+            session['user_id'] = user.id
+            session['user_email'] = user.email
+            session.permanent = True  # Use PERMANENT_SESSION_LIFETIME from config
+            
+            flash('Welcome back! You have successfully signed in.', 'success')
+            
+            # Redirect to home page or to the page they were trying to access
+            next_page = request.args.get('next')
+            if next_page:
+                return redirect(next_page)
+            return redirect(url_for('home'))
+            
+        except AuthenticationError as e:
+            # Handle authentication errors
+            error_message = str(e)
+            
+            # Determine which field the error applies to
+            if 'email' in error_message.lower() and 'password' in error_message.lower():
+                # Generic "incorrect email or password" error
+                errors['email'] = error_message
+            elif 'verification' in error_message.lower():
+                # Email verification required error
+                flash(error_message, 'error')
+            else:
+                # Other authentication errors
+                flash(error_message, 'error')
+            
+            return render_template('signin.html', errors=errors), 401
+        
+        except Exception as e:
+            # Handle unexpected errors
+            app.logger.error(f'Unexpected error during sign-in: {str(e)}')
+            flash('An unexpected error occurred. Please try again later.', 'error')
+            return render_template('signin.html'), 500
+    @app.route('/signout')
+    def signout():
+        """
+        Sign-out route to terminate user session.
+
+        This route clears the user's session data, effectively logging them out,
+        and redirects to the home page with a confirmation message.
+
+        Requirements: 4.5
+        """
+        from flask import redirect, url_for, flash, session
+
+        # Check if user was logged in
+        was_logged_in = 'user_id' in session
+
+        # Clear all session data
+        session.clear()
+
+        # Show confirmation message only if user was actually logged in
+        if was_logged_in:
+            flash('You have been successfully signed out.', 'success')
+
+        # Redirect to home page
+        return redirect(url_for('home'))
     
     return app
 

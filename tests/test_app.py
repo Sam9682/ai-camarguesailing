@@ -594,3 +594,761 @@ def test_signup_form_preserves_email_on_error():
     
     # Email should be preserved in the form
     assert b'test@example.com' in response.data
+
+
+
+def test_verify_email_success():
+    """
+    Test that email verification succeeds with valid token.
+    
+    Requirements: 3.3
+    """
+    from src.database import Base, engine, db_session
+    from src.models import User
+    from src.auth import generate_verification_token
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Create a test user
+        user = User(email='test@example.com', is_verified=False)
+        user.set_password('password123')
+        db_session.add(user)
+        db_session.commit()
+        user_id = user.id
+        
+        # Generate verification token
+        token = generate_verification_token(user_id)
+        
+        # Verify the email
+        response = client.get(f'/verify/{token}', follow_redirects=False)
+        
+        # Should redirect to signin
+        assert response.status_code == 302
+        assert '/signin' in response.location
+        
+        # Check that user is now verified (query fresh from database)
+        verified_user = db_session.query(User).filter_by(id=user_id).first()
+        assert verified_user.is_verified is True
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+def test_verify_email_invalid_token():
+    """
+    Test that email verification fails with invalid token.
+    
+    Requirements: 3.4
+    """
+    from src.database import Base, engine, db_session
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Try to verify with invalid token
+        response = client.get('/verify/invalid_token_12345', follow_redirects=False)
+        
+        # Should redirect to home
+        assert response.status_code == 302
+        assert '/' in response.location
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+def test_verify_email_expired_token():
+    """
+    Test that email verification fails with expired token.
+    
+    Requirements: 3.4
+    """
+    from src.database import Base, engine, db_session
+    from src.models import User, VerificationToken
+    from datetime import datetime, timedelta
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Create a test user
+        user = User(email='test@example.com', is_verified=False)
+        user.set_password('password123')
+        db_session.add(user)
+        db_session.commit()
+        user_id = user.id
+        
+        # Create an expired token
+        expired_token = VerificationToken(
+            user_id=user_id,
+            token='expired_token_12345',
+            expires_at=datetime.utcnow() - timedelta(hours=1)  # Expired 1 hour ago
+        )
+        db_session.add(expired_token)
+        db_session.commit()
+        
+        # Try to verify with expired token
+        response = client.get('/verify/expired_token_12345', follow_redirects=False)
+        
+        # Should redirect to home
+        assert response.status_code == 302
+        assert '/' in response.location
+        
+        # User should still be unverified (query fresh from database)
+        verified_user = db_session.query(User).filter_by(id=user_id).first()
+        assert verified_user.is_verified is False
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+def test_verify_email_success_message():
+    """
+    Test that successful verification shows success message.
+    
+    Requirements: 3.3
+    """
+    from src.database import Base, engine, db_session
+    from src.models import User
+    from src.auth import generate_verification_token
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Create a test user
+        user = User(email='test@example.com', is_verified=False)
+        user.set_password('password123')
+        db_session.add(user)
+        db_session.commit()
+        
+        # Generate verification token
+        token = generate_verification_token(user.id)
+        
+        # Verify the email (don't follow redirects to check flash message)
+        with client.session_transaction() as sess:
+            pass  # Initialize session
+        
+        response = client.get(f'/verify/{token}', follow_redirects=False)
+        
+        # Check that flash message was set
+        with client.session_transaction() as sess:
+            flashes = dict(sess.get('_flashes', []))
+            assert any('verified' in str(msg).lower() for msg in flashes.values())
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+def test_verify_email_error_message():
+    """
+    Test that failed verification shows error message.
+    
+    Requirements: 3.4
+    """
+    from src.database import Base, engine, db_session
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Try to verify with invalid token (don't follow redirects to check flash message)
+        with client.session_transaction() as sess:
+            pass  # Initialize session
+        
+        response = client.get('/verify/invalid_token_12345', follow_redirects=False)
+        
+        # Check that flash message was set
+        with client.session_transaction() as sess:
+            flashes = dict(sess.get('_flashes', []))
+            assert any('invalid' in str(msg).lower() or 'expired' in str(msg).lower() for msg in flashes.values())
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+def test_signin_page_get():
+    """
+    Test that the signin page displays the login form.
+    
+    Requirements: 4.1
+    """
+    app = create_app()
+    client = app.test_client()
+    
+    response = client.get('/signin')
+    
+    # Verify successful response
+    assert response.status_code == 200
+    
+    # Verify signin form is present
+    assert b'Welcome Back' in response.data
+    assert b'Email Address' in response.data
+    assert b'Password' in response.data
+    assert b'Sign In' in response.data
+
+
+def test_signin_page_accessible_without_auth():
+    """
+    Test that the signin page is accessible without authentication.
+    
+    Requirements: 4.1
+    """
+    app = create_app()
+    client = app.test_client()
+    
+    # Access without authentication
+    response = client.get('/signin')
+    
+    # Should return 200, not redirect
+    assert response.status_code == 200
+    assert b'Welcome Back' in response.data
+
+
+def test_signin_redirects_if_logged_in():
+    """
+    Test that the signin page redirects if user is already logged in.
+    
+    Requirements: 4.1
+    """
+    app = create_app()
+    client = app.test_client()
+    
+    # Simulate an authenticated session
+    with client.session_transaction() as session:
+        session['user_id'] = 1
+        session['user_email'] = 'test@example.com'
+    
+    response = client.get('/signin')
+    
+    # Should redirect to home
+    assert response.status_code == 302
+    assert response.location == '/' or response.location.endswith('/')
+
+
+def test_signin_includes_signup_link():
+    """
+    Test that the signin page includes a link to sign up.
+    
+    Requirements: 4.1
+    """
+    app = create_app()
+    client = app.test_client()
+    
+    response = client.get('/signin')
+    
+    # Verify sign up link is present
+    assert b"Don't have an account?" in response.data
+    assert b'Sign Up' in response.data
+    assert b'/signup' in response.data
+
+
+def test_signin_post_verified_user_success():
+    """
+    Test that verified user can sign in with correct credentials.
+    
+    Requirements: 4.2
+    """
+    from src.database import Base, engine, db_session
+    from src.models import User
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Create a verified test user
+        user = User(email='verified@example.com', is_verified=True)
+        user.set_password('password123')
+        db_session.add(user)
+        db_session.commit()
+        
+        # Attempt to sign in
+        response = client.post('/signin', data={
+            'email': 'verified@example.com',
+            'password': 'password123'
+        }, follow_redirects=False)
+        
+        # Should redirect to home
+        assert response.status_code == 302
+        assert '/' in response.location
+        
+        # Check that session was created
+        with client.session_transaction() as sess:
+            assert sess.get('user_id') is not None
+            assert sess.get('user_email') == 'verified@example.com'
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+def test_signin_post_incorrect_password():
+    """
+    Test that signin rejects incorrect password.
+    
+    Requirements: 4.3
+    """
+    from src.database import Base, engine, db_session
+    from src.models import User
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Create a verified test user
+        user = User(email='verified@example.com', is_verified=True)
+        user.set_password('password123')
+        db_session.add(user)
+        db_session.commit()
+        
+        # Attempt to sign in with wrong password
+        response = client.post('/signin', data={
+            'email': 'verified@example.com',
+            'password': 'wrongpassword'
+        })
+        
+        # Should return 401 with error
+        assert response.status_code == 401
+        assert b'Incorrect email or password' in response.data
+        
+        # Session should not be created
+        with client.session_transaction() as sess:
+            assert sess.get('user_id') is None
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+def test_signin_post_nonexistent_email():
+    """
+    Test that signin rejects nonexistent email.
+    
+    Requirements: 4.3
+    """
+    from src.database import Base, engine, db_session
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Attempt to sign in with nonexistent email
+        response = client.post('/signin', data={
+            'email': 'nonexistent@example.com',
+            'password': 'password123'
+        })
+        
+        # Should return 401 with error
+        assert response.status_code == 401
+        assert b'Incorrect email or password' in response.data
+        
+        # Session should not be created
+        with client.session_transaction() as sess:
+            assert sess.get('user_id') is None
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+def test_signin_post_unverified_user():
+    """
+    Test that unverified user cannot sign in.
+    
+    Requirements: 4.4
+    """
+    from src.database import Base, engine, db_session
+    from src.models import User
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Create an unverified test user
+        user = User(email='unverified@example.com', is_verified=False)
+        user.set_password('password123')
+        db_session.add(user)
+        db_session.commit()
+        
+        # Attempt to sign in
+        response = client.post('/signin', data={
+            'email': 'unverified@example.com',
+            'password': 'password123'
+        })
+        
+        # Should return 401 with verification error
+        assert response.status_code == 401
+        assert b'verification' in response.data.lower()
+        
+        # Session should not be created
+        with client.session_transaction() as sess:
+            assert sess.get('user_id') is None
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+def test_signin_form_preserves_email_on_error():
+    """
+    Test that signin form preserves email on authentication error.
+    
+    Requirements: 4.3
+    """
+    from src.database import Base, engine, db_session
+    from src.models import User
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Create a verified test user
+        user = User(email='test@example.com', is_verified=True)
+        user.set_password('password123')
+        db_session.add(user)
+        db_session.commit()
+        
+        # Attempt to sign in with wrong password
+        response = client.post('/signin', data={
+            'email': 'test@example.com',
+            'password': 'wrongpassword'
+        })
+        
+        # Email should be preserved in the form
+        assert b'test@example.com' in response.data
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+def test_signin_creates_permanent_session():
+    """
+    Test that signin creates a permanent session.
+    
+    Requirements: 4.2
+    """
+    from src.database import Base, engine, db_session
+    from src.models import User
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Create a verified test user
+        user = User(email='verified@example.com', is_verified=True)
+        user.set_password('password123')
+        db_session.add(user)
+        db_session.commit()
+        
+        # Attempt to sign in
+        response = client.post('/signin', data={
+            'email': 'verified@example.com',
+            'password': 'password123'
+        }, follow_redirects=False)
+        
+        # Check that session is permanent
+        with client.session_transaction() as sess:
+            assert sess.permanent is True
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+def test_signin_success_message():
+    """
+    Test that successful signin shows success message.
+    
+    Requirements: 4.2
+    """
+    from src.database import Base, engine, db_session
+    from src.models import User
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Create a verified test user
+        user = User(email='verified@example.com', is_verified=True)
+        user.set_password('password123')
+        db_session.add(user)
+        db_session.commit()
+        
+        # Initialize session
+        with client.session_transaction() as sess:
+            pass
+        
+        # Attempt to sign in
+        response = client.post('/signin', data={
+            'email': 'verified@example.com',
+            'password': 'password123'
+        }, follow_redirects=False)
+        
+        # Check that flash message was set
+        with client.session_transaction() as sess:
+            flashes = dict(sess.get('_flashes', []))
+            assert any('welcome' in str(msg).lower() or 'signed in' in str(msg).lower() for msg in flashes.values())
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+def test_signout_route_exists():
+    """
+    Test that the signout route exists.
+    
+    Requirements: 4.5
+    """
+    app = create_app()
+    client = app.test_client()
+    
+    response = client.get('/signout', follow_redirects=False)
+    
+    # Should redirect (not 404)
+    assert response.status_code == 302
+
+
+def test_signout_clears_session():
+    """
+    Test that signout clears the user session.
+    
+    Requirements: 4.5
+    """
+    app = create_app()
+    client = app.test_client()
+    
+    # Create a session
+    with client.session_transaction() as sess:
+        sess['user_id'] = 1
+        sess['user_email'] = 'test@example.com'
+    
+    # Sign out
+    response = client.get('/signout', follow_redirects=False)
+    
+    # Check that session was cleared
+    with client.session_transaction() as sess:
+        assert sess.get('user_id') is None
+        assert sess.get('user_email') is None
+
+
+def test_signout_redirects_to_home():
+    """
+    Test that signout redirects to the home page.
+    
+    Requirements: 4.5
+    """
+    app = create_app()
+    client = app.test_client()
+    
+    # Create a session
+    with client.session_transaction() as sess:
+        sess['user_id'] = 1
+        sess['user_email'] = 'test@example.com'
+    
+    # Sign out
+    response = client.get('/signout', follow_redirects=False)
+    
+    # Should redirect to home
+    assert response.status_code == 302
+    assert '/' in response.location
+
+
+def test_signout_shows_success_message():
+    """
+    Test that signout shows a success message.
+    
+    Requirements: 4.5
+    """
+    app = create_app()
+    client = app.test_client()
+    
+    # Create a session
+    with client.session_transaction() as sess:
+        sess['user_id'] = 1
+        sess['user_email'] = 'test@example.com'
+    
+    # Sign out
+    response = client.get('/signout', follow_redirects=False)
+    
+    # Check that flash message was set
+    with client.session_transaction() as sess:
+        flashes = dict(sess.get('_flashes', []))
+        assert any('signed out' in str(msg).lower() for msg in flashes.values())
+
+
+def test_signout_when_not_logged_in():
+    """
+    Test that signout works even when user is not logged in.
+    
+    Requirements: 4.5
+    """
+    app = create_app()
+    client = app.test_client()
+    
+    # Sign out without being logged in
+    response = client.get('/signout', follow_redirects=False)
+    
+    # Should still redirect to home (graceful handling)
+    assert response.status_code == 302
+    assert '/' in response.location
+
+
+def test_signout_prevents_protected_page_access():
+    """
+    Test that after signout, user cannot access protected pages.
+    
+    This test verifies that the session termination is effective and
+    protected pages are no longer accessible after signing out.
+    
+    Requirements: 4.5, 5.4
+    """
+    from src.database import Base, engine, db_session
+    from src.models import User
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Create a verified test user
+        user = User(email='verified@example.com', is_verified=True)
+        user.set_password('password123')
+        db_session.add(user)
+        db_session.commit()
+        
+        # Sign in
+        client.post('/signin', data={
+            'email': 'verified@example.com',
+            'password': 'password123'
+        })
+        
+        # Verify user is logged in
+        with client.session_transaction() as sess:
+            assert sess.get('user_id') is not None
+        
+        # Sign out
+        client.get('/signout')
+        
+        # Verify session is cleared
+        with client.session_transaction() as sess:
+            assert sess.get('user_id') is None
+        
+        # Note: We would test protected page access here, but those routes
+        # haven't been implemented yet (calendar, forum, etc.)
+        # This test can be expanded once protected routes are available
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+def test_signout_full_flow():
+    """
+    Test complete signin -> signout flow.
+    
+    Requirements: 4.2, 4.5
+    """
+    from src.database import Base, engine, db_session
+    from src.models import User
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Create a verified test user
+        user = User(email='verified@example.com', is_verified=True)
+        user.set_password('password123')
+        db_session.add(user)
+        db_session.commit()
+        
+        # Sign in
+        signin_response = client.post('/signin', data={
+            'email': 'verified@example.com',
+            'password': 'password123'
+        }, follow_redirects=False)
+        
+        # Verify signin was successful
+        assert signin_response.status_code == 302
+        with client.session_transaction() as sess:
+            assert sess.get('user_id') is not None
+            assert sess.get('user_email') == 'verified@example.com'
+        
+        # Sign out
+        signout_response = client.get('/signout', follow_redirects=False)
+        
+        # Verify signout was successful
+        assert signout_response.status_code == 302
+        assert '/' in signout_response.location
+        
+        # Verify session is cleared
+        with client.session_transaction() as sess:
+            assert sess.get('user_id') is None
+            assert sess.get('user_email') is None
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
