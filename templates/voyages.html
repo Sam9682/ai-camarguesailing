@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 
-{% block title %}Voyages - Camargue Sailing{% endblock %}
+{% block title %}{{ _('Voyages - Camargue Sailing') }}{% endblock %}
 
 {% block content %}
 <div class="page-header">
     <div class="container">
-        <h1>One-Week Sailing Voyages</h1>
-        <p class="page-subtitle">Discover the South of France from the Sea</p>
+        <h1>{{ _('One-Week Sailing Voyages') }}</h1>
+        <p class="page-subtitle">{{ _('Discover the South of France from the Sea') }}</p>
     </div>
 </div>
 
@@ -14,16 +14,12 @@
     <div class="container">
         <div class="intro-content">
             <div class="intro-text">
-                <h2>Your Mediterranean Adventure Awaits</h2>
+                <h2>{{ _('Your Mediterranean Adventure Awaits') }}</h2>
                 <p>
-                    Our one-week sailing voyages offer the perfect balance of adventure and relaxation. 
-                    Departing from Saintes-Maries-de-la-Mer in the heart of the Camargue, each voyage 
-                    takes you along the stunning Mediterranean coastline of the South of France.
+                    {{ _('Our one-week sailing voyages offer the perfect balance of adventure and relaxation. Departing from Saintes-Maries-de-la-Mer in the heart of the Camargue, each voyage takes you along the stunning Mediterranean coastline of the South of France.') }}
                 </p>
                 <p>
-                    Whether you're seeking to learn sailing skills, explore hidden coves, or simply 
-                    enjoy the freedom of life at sea, our voyages provide an authentic and unforgettable 
-                    experience aboard our comfortable AMEL yacht.
+                    {{ _('Whether you\'re seeking to learn sailing skills, explore hidden coves, or simply enjoy the freedom of life at sea, our voyages provide an authentic and unforgettable experience aboard our comfortable AMEL yacht.') }}
                 </p>
             </div>
             <div class="intro-image">
@@ -35,23 +31,23 @@
 
 <section class="voyage-details">
     <div class="container">
-        <h2>What to Expect</h2>
+        <h2>{{ _('What to Expect') }}</h2>
         <div class="details-grid">
             <div class="detail-card">
-                <h3>📅 Duration</h3>
-                <p>Each voyage lasts one full week (7 days/6 nights), giving you ample time to explore, relax, and truly experience life at sea.</p>
+                <h3>📅 {{ _('Duration') }}</h3>
+                <p>{{ _('Each voyage lasts one full week (7 days/6 nights), giving you ample time to explore, relax, and truly experience life at sea.') }}</p>
             </div>
             <div class="detail-card">
-                <h3>🗺️ Itinerary</h3>
-                <p>Flexible routes along the Mediterranean coast, adapted to weather conditions and group preferences. Typical destinations include coastal villages, secluded anchorages, and beautiful beaches.</p>
+                <h3>🗺️ {{ _('Itinerary') }}</h3>
+                <p>{{ _('Flexible routes along the Mediterranean coast, adapted to weather conditions and group preferences. Typical destinations include coastal villages, secluded anchorages, and beautiful beaches.') }}</p>
             </div>
             <div class="detail-card">
-                <h3>👥 Group Size</h3>
-                <p>Small groups of 4-6 passengers ensure a personalized experience and comfortable living aboard.</p>
+                <h3>👥 {{ _('Group Size') }}</h3>
+                <p>{{ _('Small groups of 4-6 passengers ensure a personalized experience and comfortable living aboard.') }}</p>
             </div>
             <div class="detail-card">
-                <h3>🎓 Experience Level</h3>
-                <p>All levels welcome! Whether you're a complete beginner or experienced sailor, our skipper will adapt to your interests and abilities.</p>
+                <h3>🎓 {{ _('Experience Level') }}</h3>
+                <p>{{ _('All levels welcome! Whether you\'re a complete beginner or experienced sailor, our skipper will adapt to your interests and abilities.') }}</p>
             </div>
         </div>
     </div>
@@ -59,10 +55,9 @@
 
 <section class="yacht-section">
     <div class="container">
-        <h2>Our AMEL Yacht</h2>
+        <h2>{{ _('Our AMEL Yacht') }}</h2>
         <p class="section-intro">
-            Sail aboard a premium AMEL yacht, renowned worldwide for comfort, safety, and seaworthiness. 
-            Our vessel is perfectly equipped for extended cruising in the Mediterranean.
+            {{ _('Sail aboard a premium AMEL yacht, renowned worldwide for comfort, safety, and seaworthiness. Our vessel is perfectly equipped for extended cruising in the Mediterranean.') }}
         </p>
         
         <div class="yacht-gallery">
@@ -93,7 +88,7 @@
         </div>
 
         <div class="yacht-features">
-            <h3>Yacht Features</h3>
+            <h3>{{ _('Yacht Features') }}</h3>
             <ul class="features-list">
                 <li>Spacious cockpit with sun protection</li>
                 <li>Comfortable cabins with private berths</li>
@@ -109,41 +104,41 @@
 
 <section class="typical-day">
     <div class="container">
-        <h2>A Typical Day</h2>
+        <h2>{{ _('A Typical Day') }}</h2>
         <div class="day-timeline">
             <div class="timeline-item">
                 <div class="timeline-time">08:00</div>
                 <div class="timeline-content">
-                    <h4>Morning</h4>
-                    <p>Wake up to the gentle motion of the boat. Enjoy breakfast in the cockpit with views of the coast.</p>
+                    <h4>{{ _('Morning') }}</h4>
+                    <p>{{ _('Wake up to the gentle motion of the boat. Enjoy breakfast in the cockpit with views of the coast.') }}</p>
                 </div>
             </div>
             <div class="timeline-item">
                 <div class="timeline-time">10:00</div>
                 <div class="timeline-content">
-                    <h4>Set Sail</h4>
-                    <p>Weigh anchor and set sail for the day's destination. Learn sailing techniques or simply relax on deck.</p>
+                    <h4>{{ _('Set Sail') }}</h4>
+                    <p>{{ _('Weigh anchor and set sail for the day\'s destination. Learn sailing techniques or simply relax on deck.') }}</p>
                 </div>
             </div>
             <div class="timeline-item">
                 <div class="timeline-time">13:00</div>
                 <div class="timeline-content">
-                    <h4>Lunch</h4>
-                    <p>Anchor in a beautiful bay for lunch. Swim, snorkel, or explore the shore.</p>
+                    <h4>{{ _('Lunch') }}</h4>
+                    <p>{{ _('Anchor in a beautiful bay for lunch. Swim, snorkel, or explore the shore.') }}</p>
                 </div>
             </div>
             <div class="timeline-item">
                 <div class="timeline-time">15:00</div>
                 <div class="timeline-content">
-                    <h4>Afternoon Sail</h4>
-                    <p>Continue to the evening anchorage or visit a coastal village.</p>
+                    <h4>{{ _('Afternoon Sail') }}</h4>
+                    <p>{{ _('Continue to the evening anchorage or visit a coastal village.') }}</p>
                 </div>
             </div>
             <div class="timeline-item">
                 <div class="timeline-time">18:00</div>
                 <div class="timeline-content">
-                    <h4>Evening</h4>
-                    <p>Anchor for the night. Prepare dinner together, enjoy the sunset, and share stories under the stars.</p>
+                    <h4>{{ _('Evening') }}</h4>
+                    <p>{{ _('Anchor for the night. Prepare dinner together, enjoy the sunset, and share stories under the stars.') }}</p>
                 </div>
             </div>
         </div>
@@ -154,7 +149,7 @@
     <div class="container">
         <div class="included-grid">
             <div class="included-column">
-                <h3>✓ What's Included</h3>
+                <h3>✓ {{ _('What\'s Included') }}</h3>
                 <ul>
                     <li>7 days/6 nights aboard the yacht</li>
                     <li>Professional skipper</li>
@@ -166,7 +161,7 @@
                 </ul>
             </div>
             <div class="included-column">
-                <h3>✗ Not Included</h3>
+                <h3>✗ {{ _('Not Included') }}</h3>
                 <ul>
                     <li>Food and beverages (shared provisioning)</li>
                     <li>Personal travel insurance</li>
@@ -181,16 +176,16 @@
 
 <section class="cta-section">
     <div class="container">
-        <h2>Ready to Book Your Voyage?</h2>
-        <p>Join us for an unforgettable week sailing the Mediterranean</p>
+        <h2>{{ _('Ready to Book Your Voyage?') }}</h2>
+        <p>{{ _('Join us for an unforgettable week sailing the Mediterranean') }}</p>
         <div class="cta-buttons">
             {% if session.get('user_id') %}
-                <a href="/calendar" class="btn btn-primary btn-large">View Available Dates</a>
-                <a href="/voyage-options" class="btn btn-secondary btn-large">Explore Options</a>
+                <a href="/calendar" class="btn btn-primary btn-large">{{ _('View Available Dates') }}</a>
+                <a href="/voyage-options" class="btn btn-secondary btn-large">{{ _('Explore Options') }}</a>
             {% else %}
-                <p class="cta-note">Sign up to view our calendar and book your voyage</p>
-                <a href="/signup" class="btn btn-primary btn-large">Sign Up Now</a>
-                <a href="/signin" class="btn btn-secondary btn-large">Sign In</a>
+                <p class="cta-note">{{ _('Sign up to view our calendar and book your voyage') }}</p>
+                <a href="/signup" class="btn btn-primary btn-large">{{ _('Sign Up Now') }}</a>
+                <a href="/signin" class="btn btn-secondary btn-large">{{ _('Sign In') }}</a>
             {% endif %}
         </div>
     </div>
