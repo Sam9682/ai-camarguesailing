@@ -22,6 +22,8 @@ services:
   web:
     build: .
     container_name: ai-camarguesailing-web-${USER_ID}
+    env_file:
+      - .env.prod
     environment:
       FLASK_APP: src.app
       FLASK_ENV: production
@@ -33,7 +35,7 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    command: flask run --host=0.0.0.0
+    command: /app/scripts/start.sh
     restart: unless-stopped
     networks:
       - camargue-network
