@@ -382,3 +382,286 @@ msgstr "Explorer les Options"
 
 msgid "Sign up to view our calendar and book your voyage"
 msgstr "Inscrivez-vous pour voir notre calendrier et réserver votre voyage"
+
+# Voyage Options Page
+msgid "Voyage Options - Camargue Sailing"
+msgstr "Options de Voyage - Camargue Sailing"
+
+msgid "Voyage Options"
+msgstr "Options de Voyage"
+
+msgid "Choose the Perfect Sailing Experience for You"
+msgstr "Choisissez l'Expérience de Navigation Parfaite pour Vous"
+
+msgid "We offer a variety of sailing voyage options to suit different interests, experience levels, and preferences. Whether you're looking to discover the Mediterranean coast, learn sailing skills, or enjoy a relaxing week at sea, we have the perfect voyage for you."
+msgstr "Nous proposons une variété d'options de voyages en voilier pour répondre à différents intérêts, niveaux d'expérience et préférences. Que vous cherchiez à découvrir la côte méditerranéenne, à apprendre les techniques de navigation ou à profiter d'une semaine relaxante en mer, nous avons le voyage parfait pour vous."
+
+msgid "Discovery Voyage"
+msgstr "Voyage Découverte"
+
+msgid "Explore the Mediterranean Coast"
+msgstr "Explorer la Côte Méditerranéenne"
+
+msgid "Perfect for those who want to experience the beauty of the South of France from the sea. This voyage focuses on discovering hidden coves, charming coastal villages, and pristine beaches along the Mediterranean coastline."
+msgstr "Parfait pour ceux qui veulent découvrir la beauté du Sud de la France depuis la mer. Ce voyage se concentre sur la découverte de criques cachées, de charmants villages côtiers et de plages vierges le long du littoral méditerranéen."
+
+msgid "Highlights:"
+msgstr "Points Forts :"
+
+msgid "Visit secluded anchorages and beautiful bays"
+msgstr "Visiter des mouillages isolés et de belles baies"
+
+msgid "Explore coastal villages and local markets"
+msgstr "Explorer les villages côtiers et les marchés locaux"
+
+msgid "Swimming and snorkeling in crystal-clear waters"
+msgstr "Nager et faire de la plongée dans des eaux cristallines"
+
+msgid "Flexible itinerary based on weather and group preferences"
+msgstr "Itinéraire flexible basé sur la météo et les préférences du groupe"
+
+msgid "Relaxed pace with plenty of time to enjoy each location"
+msgstr "Rythme détendu avec beaucoup de temps pour profiter de chaque endroit"
+
+msgid "Duration:"
+msgstr "Durée :"
+
+msgid "7 days / 6 nights"
+msgstr "7 jours / 6 nuits"
+
+msgid "Experience Level:"
+msgstr "Niveau d'Expérience :"
+
+msgid "All levels welcome"
+msgstr "Tous niveaux bienvenus"
+
+msgid "Group Size:"
+msgstr "Taille du Groupe :"
+
+msgid "4-6 passengers"
+msgstr "4-6 passagers"
+
+msgid "Learning Voyage"
+msgstr "Voyage Apprentissage"
+
+msgid "Develop Your Sailing Skills"
+msgstr "Développez Vos Compétences en Navigation"
+
+msgid "Ideal for those who want to learn or improve their sailing abilities. Our experienced skipper will teach you navigation, sail handling, boat handling, and safety procedures while exploring the beautiful Mediterranean coast."
+msgstr "Idéal pour ceux qui veulent apprendre ou améliorer leurs compétences en navigation. Notre skipper expérimenté vous enseignera la navigation, le maniement des voiles, la conduite du bateau et les procédures de sécurité tout en explorant la magnifique côte méditerranéenne."
+
+msgid "Hands-on sailing instruction from experienced skipper"
+msgstr "Formation pratique à la navigation par un skipper expérimenté"
+
+msgid "Learn navigation, sail trim, and boat handling"
+msgstr "Apprendre la navigation, le réglage des voiles et la conduite du bateau"
+
+msgid "Practice anchoring, mooring, and docking techniques"
+msgstr "Pratiquer les techniques de mouillage, d'amarrage et d'accostage"
+
+msgid "Weather routing and passage planning"
+msgstr "Routage météo et planification de passage"
+
+msgid "Safety procedures and emergency protocols"
+msgstr "Procédures de sécurité et protocoles d'urgence"
+
+msgid "Certificate of participation available"
+msgstr "Certificat de participation disponible"
+
+msgid "Beginners to intermediate"
+msgstr "Débutants à intermédiaires"
+
+msgid "Relaxation Voyage"
+msgstr "Voyage Détente"
+
+msgid "Unwind and Recharge at Sea"
+msgstr "Se Détendre et Se Ressourcer en Mer"
+
+msgid "Designed for those seeking peace and tranquility. This voyage emphasizes relaxation, with plenty of time for swimming, sunbathing, reading, and enjoying the simple pleasures of life aboard a sailing yacht in the Mediterranean."
+msgstr "Conçu pour ceux qui recherchent la paix et la tranquillité. Ce voyage met l'accent sur la détente, avec beaucoup de temps pour nager, bronzer, lire et profiter des plaisirs simples de la vie à bord d'un voilier en Méditerranée."
+
+msgid "Peaceful anchorages in quiet bays"
+msgstr "Mouillages paisibles dans des baies tranquilles"
+
+msgid "Leisurely pace with no rush"
+msgstr "Rythme tranquille sans précipitation"
+
+msgid "Time for swimming, snorkeling, and water activities"
+msgstr "Temps pour nager, faire de la plongée et des activités nautiques"
+
+msgid "Sunset watching and stargazing"
+msgstr "Observer les couchers de soleil et contempler les étoiles"
+
+msgid "Fresh Mediterranean cuisine"
+msgstr "Cuisine méditerranéenne fraîche"
+
+msgid "Digital detox opportunity (limited connectivity)"
+msgstr "Opportunité de détox numérique (connectivité limitée)"
+
+msgid "Custom Voyage"
+msgstr "Voyage Sur Mesure"
+
+msgid "Tailor Your Perfect Experience"
+msgstr "Créez Votre Expérience Parfaite"
+
+msgid "Create your own unique sailing adventure. Whether you have specific destinations in mind, want to combine learning with exploration, or have special interests like photography or wildlife watching, we can customize a voyage to match your vision."
+msgstr "Créez votre propre aventure de navigation unique. Que vous ayez des destinations spécifiques en tête, que vous souhaitiez combiner apprentissage et exploration, ou que vous ayez des intérêts particuliers comme la photographie ou l'observation de la faune, nous pouvons personnaliser un voyage selon votre vision."
+
+msgid "Personalized itinerary based on your preferences"
+msgstr "Itinéraire personnalisé selon vos préférences"
+
+msgid "Choose your focus: sailing, exploring, relaxing, or a mix"
+msgstr "Choisissez votre focus : navigation, exploration, détente ou un mélange"
+
+msgid "Special interests accommodated (photography, diving, etc.)"
+msgstr "Intérêts spéciaux pris en compte (photographie, plongée, etc.)"
+
+msgid "Flexible schedule and activities"
+msgstr "Horaire et activités flexibles"
+
+msgid "Private charter options available"
+msgstr "Options de charter privé disponibles"
+
+msgid "Ideal for families, groups, or special occasions"
+msgstr "Idéal pour les familles, les groupes ou les occasions spéciales"
+
+msgid "Flexible (7+ days)"
+msgstr "Flexible (7+ jours)"
+
+msgid "2-6 passengers"
+msgstr "2-6 passagers"
+
+msgid "All voyage options are conducted aboard our premium AMEL yacht, offering comfort, safety, and excellent sailing performance."
+msgstr "Toutes les options de voyage se déroulent à bord de notre voilier AMEL premium, offrant confort, sécurité et excellentes performances de navigation."
+
+msgid "Spacious and comfortable interior"
+msgstr "Intérieur spacieux et confortable"
+
+msgid "Private cabins for restful nights"
+msgstr "Cabines privées pour des nuits reposantes"
+
+msgid "Well-equipped galley for meal preparation"
+msgstr "Cuisine bien équipée pour la préparation des repas"
+
+msgid "Compare Voyage Options"
+msgstr "Comparer les Options de Voyage"
+
+msgid "Feature"
+msgstr "Caractéristique"
+
+msgid "Discovery"
+msgstr "Découverte"
+
+msgid "Learning"
+msgstr "Apprentissage"
+
+msgid "Relaxation"
+msgstr "Détente"
+
+msgid "Custom"
+msgstr "Sur Mesure"
+
+msgid "Sailing Instruction"
+msgstr "Formation à la Navigation"
+
+msgid "Basic"
+msgstr "Basique"
+
+msgid "Intensive"
+msgstr "Intensive"
+
+msgid "Optional"
+msgstr "Optionnelle"
+
+msgid "Your Choice"
+msgstr "Votre Choix"
+
+msgid "Pace"
+msgstr "Rythme"
+
+msgid "Moderate"
+msgstr "Modéré"
+
+msgid "Active"
+msgstr "Actif"
+
+msgid "Leisurely"
+msgstr "Tranquille"
+
+msgid "Flexible"
+msgstr "Flexible"
+
+msgid "Destinations"
+msgstr "Destinations"
+
+msgid "Multiple"
+msgstr "Multiples"
+
+msgid "Varied"
+msgstr "Variées"
+
+msgid "Few, peaceful"
+msgstr "Peu, paisibles"
+
+msgid "Activities"
+msgstr "Activités"
+
+msgid "Exploring"
+msgstr "Exploration"
+
+msgid "Relaxing"
+msgstr "Détente"
+
+msgid "Best For"
+msgstr "Idéal Pour"
+
+msgid "Adventurers"
+msgstr "Aventuriers"
+
+msgid "Learners"
+msgstr "Apprenants"
+
+msgid "Relaxers"
+msgstr "Détente"
+
+msgid "Everyone"
+msgstr "Tout le Monde"
+
+msgid "Pricing & Booking"
+msgstr "Tarifs & Réservation"
+
+msgid "All voyage options are priced per person for the full week. Pricing varies by season and group size. Contact us for detailed pricing information and availability."
+msgstr "Toutes les options de voyage sont tarifées par personne pour la semaine complète. Les tarifs varient selon la saison et la taille du groupe. Contactez-nous pour des informations détaillées sur les tarifs et la disponibilité."
+
+msgid "All Voyages Include:"
+msgstr "Tous les Voyages Incluent :"
+
+msgid "Professional skipper"
+msgstr "Skipper professionnel"
+
+msgid "Yacht charter"
+msgstr "Location du voilier"
+
+msgid "Fuel and marina fees"
+msgstr "Carburant et frais de port"
+
+msgid "Safety equipment"
+msgstr "Équipement de sécurité"
+
+msgid "Bed linens and towels"
+msgstr "Draps et serviettes"
+
+msgid "Dinghy with outboard"
+msgstr "Annexe avec moteur hors-bord"
+
+msgid "Ready to Choose Your Voyage?"
+msgstr "Prêt à Choisir Votre Voyage ?"
+
+msgid "Sign up to view our calendar and book your preferred voyage option"
+msgstr "Inscrivez-vous pour voir notre calendrier et réserver l'option de voyage de votre choix"
+
+msgid "View Calendar & Book"
+msgstr "Voir le Calendrier & Réserver"
+
+msgid "Learn More About Voyages"
+msgstr "En Savoir Plus sur les Voyages"
