@@ -49,6 +49,10 @@ def create_app(config_class=Config):
     app.config['BABEL_DEFAULT_LOCALE'] = 'en'
     app.config['BABEL_SUPPORTED_LOCALES'] = ['en', 'fr']
     
+    # Make get_locale available in templates
+    from src.i18n import get_locale
+    app.jinja_env.globals.update(get_locale=get_locale)
+    
     # Configure session management
     # Flask uses SECRET_KEY for signing session cookies
     app.config['SESSION_COOKIE_SECURE'] = False  # Set to True in production with HTTPS
