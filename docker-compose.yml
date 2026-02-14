@@ -1,13 +1,13 @@
 services:
   db:
     image: postgres:15-alpine
-    container_name: ai-camarguesailing-postgres-${USER_ID}-${HTTP_PORT:-5000}
+    container_name: ai-camarguesailing-postgres-${USER_ID}-5432
     environment:
       POSTGRES_USER: camargue_user
       POSTGRES_PASSWORD: camargue_password
       POSTGRES_DB: camargue_sailing
     ports:
-      - "${HTTP_PORT2}:5432"
+      - 5432
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -29,7 +29,7 @@ services:
       FLASK_ENV: production
       DATABASE_URL: postgresql://camargue_user:camargue_password@db:5432/camargue_sailing
     ports:
-      - "${HTTP_PORT}:5000"
+      - "${HTTP_PORT:-5000}:5000"
     volumes:
       - .:/app
     depends_on:
