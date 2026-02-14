@@ -128,12 +128,18 @@ def register_user(email: str, password: str) -> User:
         db_session.add(user)
         db_session.commit()
         return user
-    except IntegrityError:
+    except IntegrityError as e:
         db_session.rollback()
         # This handles race conditions where two registrations happen simultaneously
+        # Log the specific integrity error for debugging
+        import logging
+        logging.error(f"IntegrityError during user registration: {str(e)}")
         raise RegistrationError("Email address is already registered")
     except Exception as e:
         db_session.rollback()
+        # Log unexpected database errors
+        import logging
+        logging.error(f"Database error during user registration: {str(e)}")
         raise RegistrationError(f"Failed to create user account: {str(e)}")
 
 
@@ -179,12 +185,17 @@ def generate_verification_token(user_id: int, expiration_hours: int = 24) -> str
         db_session.add(verification_token)
         db_session.commit()
         return token
-    except IntegrityError:
+    except IntegrityError as e:
         db_session.rollback()
         # In the extremely unlikely case of a token collision, try again
+        import logging
+        logging.warning(f"Token collision during verification token generation: {str(e)}")
         return generate_verification_token(user_id, expiration_hours)
     except Exception as e:
         db_session.rollback()
+        # Log unexpected database errors
+        import logging
+        logging.error(f"Database error during verification token generation: {str(e)}")
         raise ValueError(f"Failed to generate verification token: {str(e)}")
 
 
@@ -218,8 +229,11 @@ def verify_token(token: str) -> Optional[int]:
         try:
             db_session.delete(verification_token)
             db_session.commit()
-        except Exception:
+        except Exception as e:
             db_session.rollback()
+            # Log but don't fail - expired token cleanup is not critical
+            import logging
+            logging.warning(f"Failed to delete expired verification token: {str(e)}")
         return None
     
     # Get the user and mark as verified
@@ -235,6 +249,9 @@ def verify_token(token: str) -> Optional[int]:
         return user.id
     except Exception as e:
         db_session.rollback()
+        # Log the database error
+        import logging
+        logging.error(f"Database error during user verification: {str(e)}")
         raise ValueError(f"Failed to verify user: {str(e)}")
 
 
@@ -305,7 +322,10 @@ def get_user_by_id(user_id: int) -> Optional[User]:
     
     try:
         return db_session.query(User).filter_by(id=user_id).first()
-    except Exception:
+    except Exception as e:
+        # Log database errors during user lookup
+        import logging
+        logging.error(f"Database error during user lookup (user_id={user_id}): {str(e)}")
         return None
 
 

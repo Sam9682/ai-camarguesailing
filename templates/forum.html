@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Forum - Camargue Sailing{% endblock %}
+
+{% block content %}
+<div class="forum-container">
+    <div class="forum-header">
+        <h1>Discussion Forum</h1>
+        <p>Share your sailing experiences and connect with fellow sailors</p>
+        <a href="/forum/new" class="btn btn-primary">Create New Post</a>
+    </div>
+
+    <div class="forum-posts">
+        {% if calendar_data %}
+            {% for post in calendar_data %}
+            <div class="forum-post">
+                <div class="post-header">
+                    <h2 class="post-title">{{ post.title }}</h2>
+                    <div class="post-meta">
+                        <span class="post-author">Posted by {{ post.user.email }}</span>
+                        <span class="post-date">{{ post.created_at.strftime('%B %d, %Y at %I:%M %p') }}</span>
+                    </div>
+                </div>
+                
+                <div class="post-content">
+                    <p>{{ post.content }}</p>
+                </div>
+                
+                {% if post.replies %}
+                <div class="post-replies">
+                    <h3>Replies ({{ post.replies|length }})</h3>
+                    {% for reply in post.replies %}
+                    <div class="reply">
+                        <div class="reply-meta">
+                            <span class="reply-author">{{ reply.user.email }}</span>
+                            <span class="reply-date">{{ reply.created_at.strftime('%B %d, %Y at %I:%M %p') }}</span>
+                        </div>
+                        <div class="reply-content">
+                            <p>{{ reply.content }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                
+                <div class="post-actions">
+                    <a href="/forum/{{ post.id }}/reply" class="btn btn-secondary btn-small">Reply</a>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="no-posts">
+                <p>No posts yet. Be the first to start a discussion!</p>
+                <a href="/forum/new" class="btn btn-primary">Create First Post</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

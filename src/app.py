@@ -168,13 +168,24 @@ def create_app(config_class=Config):
         
         errors = {}
         
+        # Validate email format before checking password match
+        from src.auth import validate_email, validate_password
+        email_valid, email_error = validate_email(email)
+        if not email_valid:
+            errors['email'] = email_error
+        
+        # Validate password strength
+        password_valid, password_error = validate_password(password)
+        if not password_valid:
+            errors['password'] = password_error
+        
         # Validate that passwords match
-        if password != confirm_password:
+        if password and confirm_password and password != confirm_password:
             errors['confirm_password'] = 'Passwords do not match'
         
         # If there are validation errors, re-render form with errors
         if errors:
-            return render_template('signup.html', errors=errors), 400
+            return render_template('signup.html', errors=errors, email=email), 400
         
         try:
             # Attempt to register the user
@@ -273,6 +284,18 @@ def create_app(config_class=Config):
         
         errors = {}
         
+        # Validate email format
+        from src.auth import validate_email
+        email_valid, email_error = validate_email(email)
+        if not email_valid:
+            errors['email'] = email_error
+            return render_template('signin.html', errors=errors, email=email), 400
+        
+        # Validate password is provided
+        if not password:
+            errors['password'] = 'Password is required'
+            return render_template('signin.html', errors=errors, email=email), 400
+        
         try:
             # Attempt to authenticate the user
             user = authenticate_user(email, password)
@@ -336,6 +359,432 @@ def create_app(config_class=Config):
 
         # Redirect to home page
         return redirect(url_for('home'))
+    
+    # Booking routes
+    from src.auth import login_required, verified_required
+    
+    @app.route('/calendar')
+    @login_required
+    @verified_required
+    def calendar():
+        """
+        Calendar route displaying yearly planning with booked/available periods.
+        
+        This route renders the calendar page showing all bookings for the current year.
+        The calendar displays booked periods and available periods, allowing users to
+        see voyage availability at a glance.
+        
+        This route is protected and requires both authentication and email verification.
+        
+        Requirements: 6.1, 6.2, 6.3
+        """
+        from flask import render_template
+        from datetime import datetime
+        from src.booking import get_calendar_data
+        
+        # Get current year
+        current_year = datetime.now().year
+        
+        # Fetch calendar data for the current year
+        calendar_data = get_calendar_data(current_year)
+        
+        # Render calendar template with data
+        return render_template('calendar.html', 
+                             calendar_data=calendar_data, 
+                             year=current_year)
+    
+    @app.route('/book', methods=['GET', 'POST'])
+    @login_required
+    @verified_required
+    def book():
+        """
+        Booking route for creating new voyage reservations.
+        
+        GET: Display booking form with date selection fields
+        POST: Handle booking creation with validation and error handling
+        
+        This route allows verified users to create bookings by selecting start and end dates.
+        It validates date ranges, checks for overlapping bookings, and sends confirmation emails.
+        
+        This route is protected and requires both authentication and email verification.
+        
+        Requirements: 7.1, 7.2
+        """
+        from flask import render_template, request, redirect, url_for, flash, session
+        from datetime import datetime
+        from src.booking import create_booking
+        from src.email_service import send_booking_confirmation
+        from src.database import db_session
+        
+        if request.method == 'GET':
+            # Display booking form
+            return render_template('book.html')
+        
+        # Handle POST request - booking submission
+        start_date_str = request.form.get('start_date', '').strip()
+        end_date_str = request.form.get('end_date', '').strip()
+        
+        errors = {}
+        
+        # Validate that dates are provided
+        if not start_date_str:
+            errors['start_date'] = 'Start date is required'
+        if not end_date_str:
+            errors['end_date'] = 'End date is required'
+        
+        # If there are validation errors, re-render form with errors
+        if errors:
+            return render_template('book.html', errors=errors), 400
+        
+        # Parse dates
+        try:
+            start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
+        except ValueError:
+            errors['start_date'] = 'Invalid date format. Please use YYYY-MM-DD format.'
+        
+        try:
+            end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date()
+        except ValueError:
+            errors['end_date'] = 'Invalid date format. Please use YYYY-MM-DD format.'
+        
+        # If date parsing failed, re-render form with errors
+        if errors:
+            return render_template('book.html', errors=errors, 
+                                 start_date=start_date_str, 
+                                 end_date=end_date_str), 400
+        
+        # Get user_id from session
+        user_id = session.get('user_id')
+        
+        try:
+            # Attempt to create the booking
+            booking = create_booking(user_id, start_date, end_date)
+            
+            # Get the user object for email sending
+            from src.models import User
+            user = db_session.query(User).filter_by(id=user_id).first()
+            
+            # Send booking confirmation email
+            try:
+                send_booking_confirmation(booking, user)
+            except Exception as e:
+                # Log the error but don't fail the booking
+                app.logger.error(f'Failed to send booking confirmation email: {str(e)}')
+                flash('Booking created successfully! However, we could not send the confirmation email. Please contact support.', 'warning')
+            else:
+                flash('Booking created successfully! A confirmation email has been sent.', 'success')
+            
+            # Redirect to calendar on success
+            return redirect(url_for('calendar'))
+            
+        except ValueError as e:
+            # Handle booking errors (overlapping bookings, invalid dates)
+            error_message = str(e)
+            
+            # Determine which field the error applies to
+            if 'overlap' in error_message.lower() or 'not available' in error_message.lower():
+                errors['general'] = error_message
+                flash(error_message, 'error')
+            elif 'end date' in error_message.lower():
+                errors['end_date'] = error_message
+            elif 'start date' in error_message.lower():
+                errors['start_date'] = error_message
+            else:
+                errors['general'] = error_message
+                flash(error_message, 'error')
+            
+            return render_template('book.html', errors=errors, 
+                                 start_date=start_date_str, 
+                                 end_date=end_date_str), 400
+        
+        except Exception as e:
+            # Handle unexpected errors
+            app.logger.error(f'Unexpected error during booking creation: {str(e)}')
+            flash('An unexpected error occurred. Please try again later.', 'error')
+            return render_template('book.html', 
+                                 start_date=start_date_str, 
+                                 end_date=end_date_str), 500
+    
+    # Forum routes
+    @app.route('/forum')
+    @login_required
+    @verified_required
+    def forum():
+        """
+        Forum route displaying all discussion posts.
+        
+        This route renders the forum page showing all forum posts with their authors,
+        timestamps, and replies. The page is protected and requires both authentication
+        and email verification.
+        
+        Requirements: 8.1, 8.3, 8.6
+        """
+        from flask import render_template
+        from src.forum import get_all_posts
+        
+        # Fetch all forum posts with replies
+        posts = get_all_posts()
+        
+        # Render forum template with posts
+        return render_template('forum.html', calendar_data=posts)
+    
+    @app.route('/forum/new', methods=['GET', 'POST'])
+    @login_required
+    @verified_required
+    def new_post():
+        """
+        New post route for creating forum posts.
+        
+        GET: Display post creation form with title and content fields
+        POST: Handle post creation with validation and error handling
+        
+        This route allows verified users to create new forum posts by providing
+        a title and content. It validates the input, creates the post, and redirects
+        to the forum page on success.
+        
+        This route is protected and requires both authentication and email verification.
+        
+        Requirements: 8.2
+        """
+        from flask import render_template, request, redirect, url_for, flash, session
+        from src.forum import create_post
+        
+        if request.method == 'GET':
+            # Display post creation form
+            return render_template('new_post.html')
+        
+        # Handle POST request - post creation submission
+        title = request.form.get('title', '').strip()
+        content = request.form.get('content', '').strip()
+        
+        errors = {}
+        
+        # Validate that fields are provided
+        if not title:
+            errors['title'] = 'Title is required'
+        elif len(title) > 255:
+            errors['title'] = 'Title is too long (maximum 255 characters)'
+        
+        if not content:
+            errors['content'] = 'Content is required'
+        
+        # If there are validation errors, re-render form with errors
+        if errors:
+            return render_template('new_post.html', errors=errors, 
+                                 title=title, content=content), 400
+        
+        # Get user_id from session
+        user_id = session.get('user_id')
+        
+        try:
+            # Attempt to create the post
+            post = create_post(user_id, title, content)
+            
+            flash('Post created successfully!', 'success')
+            
+            # Redirect to forum on success
+            return redirect(url_for('forum'))
+            
+        except ValueError as e:
+            # Handle post creation errors (validation failures)
+            error_message = str(e)
+            
+            # Determine which field the error applies to
+            if 'title' in error_message.lower():
+                errors['title'] = error_message
+            elif 'content' in error_message.lower():
+                errors['content'] = error_message
+            else:
+                errors['general'] = error_message
+                flash(error_message, 'error')
+            
+            return render_template('new_post.html', errors=errors, 
+                                 title=title, content=content), 400
+        
+        except Exception as e:
+            # Handle unexpected errors
+            app.logger.error(f'Unexpected error during post creation: {str(e)}')
+            flash('An unexpected error occurred. Please try again later.', 'error')
+            return render_template('new_post.html', 
+                                 title=title, content=content), 500
+    
+    @app.route('/forum/<int:post_id>/reply', methods=['GET', 'POST'])
+    @login_required
+    @verified_required
+    def reply_to_post(post_id):
+        """
+        Reply route for adding replies to forum posts.
+        
+        GET: Display reply form for a specific post
+        POST: Handle reply creation with validation and error handling
+        
+        This route allows verified users to reply to existing forum posts.
+        It validates the content, creates the reply, and redirects to the
+        forum page on success.
+        
+        This route is protected and requires both authentication and email verification.
+        
+        Args:
+            post_id: ID of the post being replied to
+        
+        Requirements: 8.4
+        """
+        from flask import render_template, request, redirect, url_for, flash, session
+        from src.forum import create_reply, get_all_posts
+        from src.database import db_session
+        from src.models import ForumPost
+        
+        # Get the post to verify it exists
+        post = db_session.query(ForumPost).filter_by(id=post_id).first()
+        
+        if not post:
+            flash('Post not found.', 'error')
+            return redirect(url_for('forum'))
+        
+        if request.method == 'GET':
+            # Display reply form
+            return render_template('reply.html', post=post)
+        
+        # Handle POST request - reply submission
+        content = request.form.get('content', '').strip()
+        
+        errors = {}
+        
+        # Validate that content is provided
+        if not content:
+            errors['content'] = 'Reply content is required'
+        elif len(content) == 0:
+            errors['content'] = 'Reply content cannot be empty'
+        
+        # If there are validation errors, re-render form with errors
+        if errors:
+            return render_template('reply.html', post=post, errors=errors, 
+                                 content=content), 400
+        
+        # Get user_id from session
+        user_id = session.get('user_id')
+        
+        try:
+            # Attempt to create the reply
+            reply = create_reply(post_id, user_id, content)
+            
+            flash('Reply posted successfully!', 'success')
+            
+            # Redirect to forum on success
+            return redirect(url_for('forum'))
+            
+        except ValueError as e:
+            # Handle reply creation errors (validation failures)
+            error_message = str(e)
+            
+            # Determine which field the error applies to
+            if 'content' in error_message.lower():
+                errors['content'] = error_message
+            elif 'post' in error_message.lower() and 'not exist' in error_message.lower():
+                # Post was deleted between GET and POST
+                flash(error_message, 'error')
+                return redirect(url_for('forum'))
+            else:
+                errors['general'] = error_message
+                flash(error_message, 'error')
+            
+            return render_template('reply.html', post=post, errors=errors, 
+                                 content=content), 400
+        
+        except Exception as e:
+            # Handle unexpected errors
+            app.logger.error(f'Unexpected error during reply creation: {str(e)}')
+            flash('An unexpected error occurred. Please try again later.', 'error')
+            return render_template('reply.html', post=post, content=content), 500
+    
+    # Error handlers
+    @app.errorhandler(404)
+    def not_found_error(error):
+        """
+        Handle 404 Not Found errors.
+        
+        This handler is triggered when a requested page or resource
+        does not exist on the server.
+        
+        Args:
+            error: The error object
+        
+        Returns:
+            Rendered error page with 404 status code
+        """
+        from flask import render_template
+        return render_template('error.html',
+                             error_code=404,
+                             error_title='Page Not Found',
+                             error_message='The page you are looking for does not exist. It may have been moved or deleted.'), 404
+    
+    @app.errorhandler(500)
+    def internal_error(error):
+        """
+        Handle 500 Internal Server Error.
+        
+        This handler is triggered when an unexpected error occurs
+        on the server during request processing.
+        
+        Args:
+            error: The error object
+        
+        Returns:
+            Rendered error page with 500 status code
+        """
+        from flask import render_template
+        from src.database import db_session
+        
+        # Rollback any pending database transactions
+        db_session.rollback()
+        
+        # Log the error
+        app.logger.error(f'Internal server error: {str(error)}')
+        
+        return render_template('error.html',
+                             error_code=500,
+                             error_title='Internal Server Error',
+                             error_message='An unexpected error occurred on the server. Please try again later.'), 500
+    
+    @app.errorhandler(403)
+    def forbidden_error(error):
+        """
+        Handle 403 Forbidden errors.
+        
+        This handler is triggered when a user attempts to access
+        a resource they do not have permission to access.
+        
+        Args:
+            error: The error object
+        
+        Returns:
+            Rendered error page with 403 status code
+        """
+        from flask import render_template
+        return render_template('error.html',
+                             error_code=403,
+                             error_title='Forbidden',
+                             error_message='You do not have permission to access this resource.'), 403
+    
+    @app.errorhandler(401)
+    def unauthorized_error(error):
+        """
+        Handle 401 Unauthorized errors.
+        
+        This handler is triggered when authentication is required
+        but not provided or is invalid.
+        
+        Args:
+            error: The error object
+        
+        Returns:
+            Rendered error page with 401 status code
+        """
+        from flask import render_template
+        return render_template('error.html',
+                             error_code=401,
+                             error_title='Unauthorized',
+                             error_message='Authentication is required to access this resource. Please sign in to continue.'), 401
     
     return app
 

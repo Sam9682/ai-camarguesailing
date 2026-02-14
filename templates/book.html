@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Book a Voyage - Camargue Sailing{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <h1>Book Your Sailing Voyage</h1>
+        <p class="auth-subtitle">Select your preferred dates for a one-week sailing adventure</p>
+        
+        <form method="POST" action="/book" class="auth-form">
+            <div class="form-group">
+                <label for="start_date">Start Date</label>
+                <input 
+                    type="date" 
+                    id="start_date" 
+                    name="start_date" 
+                    required
+                    value="{{ start_date or '' }}"
+                    min="{{ today }}"
+                >
+                {% if errors and errors.start_date %}
+                    <span class="error-message">{{ errors.start_date }}</span>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="end_date">End Date</label>
+                <input 
+                    type="date" 
+                    id="end_date" 
+                    name="end_date" 
+                    required
+                    value="{{ end_date or '' }}"
+                    min="{{ today }}"
+                >
+                {% if errors and errors.end_date %}
+                    <span class="error-message">{{ errors.end_date }}</span>
+                {% endif %}
+            </div>
+            
+            {% if errors and errors.general %}
+                <div class="error-message general-error">{{ errors.general }}</div>
+            {% endif %}
+            
+            <div class="booking-info">
+                <p><strong>Note:</strong> Our sailing voyages are typically one week long. Please ensure your selected dates span approximately 7 days.</p>
+                <p>After booking, you will receive a confirmation email with voyage details.</p>
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-full">Create Booking</button>
+        </form>
+        
+        <div class="auth-footer">
+            <p><a href="/calendar">View Calendar</a> to see available periods</p>
+            <p><a href="/">Back to Home</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

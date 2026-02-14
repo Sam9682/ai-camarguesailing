@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Sailing Calendar - Camargue Sailing{% endblock %}
+
+{% block content %}
+<div class="calendar-container">
+    <div class="calendar-header">
+        <h1>Sailing Calendar {{ year }}</h1>
+        <p class="calendar-subtitle">View available and booked sailing periods for the year</p>
+    </div>
+
+    <div class="calendar-legend">
+        <div class="legend-item">
+            <span class="legend-color available"></span>
+            <span>Available</span>
+        </div>
+        <div class="legend-item">
+            <span class="legend-color booked"></span>
+            <span>Booked</span>
+        </div>
+    </div>
+
+    {% if calendar_data %}
+        <div class="calendar-bookings">
+            <h2>Booked Periods</h2>
+            <div class="bookings-list">
+                {% for booking in calendar_data %}
+                    <div class="booking-card {% if booking.status == 'confirmed' %}confirmed{% else %}cancelled{% endif %}">
+                        <div class="booking-dates">
+                            <span class="date-label">From:</span>
+                            <span class="date-value">{{ booking.start_date }}</span>
+                        </div>
+                        <div class="booking-dates">
+                            <span class="date-label">To:</span>
+                            <span class="date-value">{{ booking.end_date }}</span>
+                        </div>
+                        <div class="booking-status">
+                            <span class="status-badge status-{{ booking.status }}">{{ booking.status|capitalize }}</span>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% else %}
+        <div class="no-bookings">
+            <p>No bookings found for {{ year }}. All periods are currently available!</p>
+            <a href="/book" class="btn btn-primary">Make a Booking</a>
+        </div>
+    {% endif %}
+
+    <div class="calendar-info">
+        <h2>About Voyage Bookings</h2>
+        <p>Our sailing voyages are typically one week long, departing from Saintes-Maries-de-la-Mer. 
+           Each voyage offers a unique opportunity to explore the Mediterranean coast of the South of France.</p>
+        <p>To make a booking, please check the available periods above and contact us or use our booking form.</p>
+    </div>
+
+    <div class="calendar-actions">
+        <a href="/" class="btn btn-secondary">Back to Home</a>
+        <a href="/voyages" class="btn btn-secondary">View Voyage Details</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Reply to Post - Camargue Sailing{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h1>Reply to Post</h1>
+    
+    <div class="original-post">
+        <h2>{{ post.title }}</h2>
+        <div class="post-meta">
+            <span class="post-author">Posted by {{ post.user.email }}</span>
+            <span class="post-date">{{ post.created_at.strftime('%B %d, %Y at %I:%M %p') }}</span>
+        </div>
+        <div class="post-content">
+            <p>{{ post.content }}</p>
+        </div>
+    </div>
+    
+    <form method="POST" action="/forum/{{ post.id }}/reply" class="reply-form">
+        <div class="form-group">
+            <label for="content">Your Reply</label>
+            <textarea 
+                id="content" 
+                name="content" 
+                rows="6" 
+                placeholder="Write your reply here..."
+                required
+            >{{ content if content else '' }}</textarea>
+            {% if errors and errors.content %}
+            <span class="error-message">{{ errors.content }}</span>
+            {% endif %}
+        </div>
+        
+        {% if errors and errors.general %}
+        <div class="error-message general-error">{{ errors.general }}</div>
+        {% endif %}
+        
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Post Reply</button>
+            <a href="/forum" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

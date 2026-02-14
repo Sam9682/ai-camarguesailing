@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Create New Post - Camargue Sailing{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <h1>Create New Post</h1>
+        <p class="auth-subtitle">Share your thoughts and experiences with the sailing community</p>
+        
+        <form method="POST" action="/forum/new" class="auth-form">
+            <div class="form-group">
+                <label for="title">Post Title</label>
+                <input 
+                    type="text" 
+                    id="title" 
+                    name="title" 
+                    required
+                    maxlength="255"
+                    placeholder="Enter a descriptive title for your post"
+                    value="{{ title or '' }}"
+                >
+                {% if errors and errors.title %}
+                    <span class="error-message">{{ errors.title }}</span>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="content">Post Content</label>
+                <textarea 
+                    id="content" 
+                    name="content" 
+                    required
+                    rows="10"
+                    placeholder="Share your sailing experiences, ask questions, or start a discussion..."
+                >{{ content or '' }}</textarea>
+                {% if errors and errors.content %}
+                    <span class="error-message">{{ errors.content }}</span>
+                {% endif %}
+            </div>
+            
+            {% if errors and errors.general %}
+                <div class="error-message general-error">{{ errors.general }}</div>
+            {% endif %}
+            
+            <button type="submit" class="btn btn-primary btn-full">Create Post</button>
+        </form>
+        
+        <div class="auth-footer">
+            <p><a href="/forum">Back to Forum</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1352,3 +1352,2850 @@ def test_signout_full_flow():
         # Clean up
         db_session.remove()
         Base.metadata.drop_all(bind=engine)
+
+
+
+def test_calendar_route_requires_authentication():
+    """
+    Test that the calendar route requires authentication.
+    
+    Requirements: 5.1, 6.1
+    """
+    app = create_app()
+    client = app.test_client()
+    
+    # Try to access calendar without authentication
+    response = client.get('/calendar', follow_redirects=False)
+    
+    # Should redirect to signin
+    assert response.status_code == 302
+    assert '/signin' in response.location
+
+
+def test_calendar_route_requires_verification():
+    """
+    Test that the calendar route requires email verification.
+    
+    Requirements: 3.5, 6.1
+    """
+    from src.database import Base, engine, db_session
+    from src.models import User
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Create an unverified test user
+        user = User(email='unverified@example.com', is_verified=False)
+        user.set_password('password123')
+        db_session.add(user)
+        db_session.commit()
+        user_id = user.id
+        
+        # Simulate authenticated but unverified session
+        with client.session_transaction() as sess:
+            sess['user_id'] = user_id
+            sess['user_email'] = 'unverified@example.com'
+        
+        # Try to access calendar
+        response = client.get('/calendar', follow_redirects=False)
+        
+        # Should redirect to home with error message
+        assert response.status_code == 302
+        assert '/' in response.location
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+def test_calendar_route_renders_for_verified_user():
+    """
+    Test that the calendar route renders successfully for verified users.
+    
+    Requirements: 6.1
+    """
+    from src.database import Base, engine, db_session
+    from src.models import User
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Create a verified test user
+        user = User(email='verified@example.com', is_verified=True)
+        user.set_password('password123')
+        db_session.add(user)
+        db_session.commit()
+        user_id = user.id
+        
+        # Simulate authenticated and verified session
+        with client.session_transaction() as sess:
+            sess['user_id'] = user_id
+            sess['user_email'] = 'verified@example.com'
+        
+        # Access calendar
+        response = client.get('/calendar')
+        
+        # Should render successfully
+        assert response.status_code == 200
+        assert b'Sailing Calendar' in response.data
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+def test_calendar_displays_current_year():
+    """
+    Test that the calendar displays the current year.
+    
+    Requirements: 6.1
+    """
+    from src.database import Base, engine, db_session
+    from src.models import User
+    from datetime import datetime
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Create a verified test user
+        user = User(email='verified@example.com', is_verified=True)
+        user.set_password('password123')
+        db_session.add(user)
+        db_session.commit()
+        user_id = user.id
+        
+        # Simulate authenticated and verified session
+        with client.session_transaction() as sess:
+            sess['user_id'] = user_id
+            sess['user_email'] = 'verified@example.com'
+        
+        # Access calendar
+        response = client.get('/calendar')
+        
+        # Should display current year
+        current_year = datetime.now().year
+        assert str(current_year).encode() in response.data
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+def test_calendar_displays_booked_periods():
+    """
+    Test that the calendar displays booked periods.
+    
+    Requirements: 6.2
+    """
+    from src.database import Base, engine, db_session
+    from src.models import User, Booking
+    from datetime import date, datetime
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Create a verified test user
+        user = User(email='verified@example.com', is_verified=True)
+        user.set_password('password123')
+        db_session.add(user)
+        db_session.commit()
+        user_id = user.id
+        
+        # Create a booking for current year
+        current_year = datetime.now().year
+        booking = Booking(
+            user_id=user_id,
+            start_date=date(current_year, 6, 1),
+            end_date=date(current_year, 6, 8),
+            status='confirmed'
+        )
+        db_session.add(booking)
+        db_session.commit()
+        
+        # Simulate authenticated and verified session
+        with client.session_transaction() as sess:
+            sess['user_id'] = user_id
+            sess['user_email'] = 'verified@example.com'
+        
+        # Access calendar
+        response = client.get('/calendar')
+        
+        # Should display the booking
+        assert response.status_code == 200
+        assert b'Booked Periods' in response.data
+        assert str(current_year).encode() in response.data
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+def test_calendar_shows_no_bookings_message():
+    """
+    Test that the calendar shows appropriate message when no bookings exist.
+    
+    Requirements: 6.1, 6.3
+    """
+    from src.database import Base, engine, db_session
+    from src.models import User
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Create a verified test user
+        user = User(email='verified@example.com', is_verified=True)
+        user.set_password('password123')
+        db_session.add(user)
+        db_session.commit()
+        user_id = user.id
+        
+        # Simulate authenticated and verified session
+        with client.session_transaction() as sess:
+            sess['user_id'] = user_id
+            sess['user_email'] = 'verified@example.com'
+        
+        # Access calendar (no bookings exist)
+        response = client.get('/calendar')
+        
+        # Should show no bookings message
+        assert response.status_code == 200
+        assert b'No bookings found' in response.data or b'All periods are currently available' in response.data
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+def test_calendar_includes_navigation_links():
+    """
+    Test that the calendar includes navigation links back to other pages.
+    
+    Requirements: 6.1
+    """
+    from src.database import Base, engine, db_session
+    from src.models import User
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Create a verified test user
+        user = User(email='verified@example.com', is_verified=True)
+        user.set_password('password123')
+        db_session.add(user)
+        db_session.commit()
+        user_id = user.id
+        
+        # Simulate authenticated and verified session
+        with client.session_transaction() as sess:
+            sess['user_id'] = user_id
+            sess['user_email'] = 'verified@example.com'
+        
+        # Access calendar
+        response = client.get('/calendar')
+        
+        # Should include navigation links
+        assert response.status_code == 200
+        assert b'Back to Home' in response.data or b'Home' in response.data
+        assert b'Voyage' in response.data
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+def test_calendar_displays_booking_status():
+    """
+    Test that the calendar displays booking status (confirmed/cancelled).
+    
+    Requirements: 6.2
+    """
+    from src.database import Base, engine, db_session
+    from src.models import User, Booking
+    from datetime import date, datetime
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Create a verified test user
+        user = User(email='verified@example.com', is_verified=True)
+        user.set_password('password123')
+        db_session.add(user)
+        db_session.commit()
+        user_id = user.id
+        
+        # Create bookings with different statuses
+        current_year = datetime.now().year
+        booking1 = Booking(
+            user_id=user_id,
+            start_date=date(current_year, 6, 1),
+            end_date=date(current_year, 6, 8),
+            status='confirmed'
+        )
+        booking2 = Booking(
+            user_id=user_id,
+            start_date=date(current_year, 7, 1),
+            end_date=date(current_year, 7, 8),
+            status='cancelled'
+        )
+        db_session.add(booking1)
+        db_session.add(booking2)
+        db_session.commit()
+        
+        # Simulate authenticated and verified session
+        with client.session_transaction() as sess:
+            sess['user_id'] = user_id
+            sess['user_email'] = 'verified@example.com'
+        
+        # Access calendar
+        response = client.get('/calendar')
+        
+        # Should display booking statuses
+        assert response.status_code == 200
+        assert b'confirmed' in response.data.lower() or b'Confirmed' in response.data
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+def test_calendar_legend_shows_availability():
+    """
+    Test that the calendar includes a legend showing available/booked indicators.
+    
+    Requirements: 6.2, 6.3
+    """
+    from src.database import Base, engine, db_session
+    from src.models import User
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Create a verified test user
+        user = User(email='verified@example.com', is_verified=True)
+        user.set_password('password123')
+        db_session.add(user)
+        db_session.commit()
+        user_id = user.id
+        
+        # Simulate authenticated and verified session
+        with client.session_transaction() as sess:
+            sess['user_id'] = user_id
+            sess['user_email'] = 'verified@example.com'
+        
+        # Access calendar
+        response = client.get('/calendar')
+        
+        # Should include legend
+        assert response.status_code == 200
+        assert b'Available' in response.data
+        assert b'Booked' in response.data
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+
+def test_book_route_requires_authentication():
+    """
+    Test that the booking route requires authentication.
+    
+    Requirements: 5.1, 7.1
+    """
+    app = create_app()
+    client = app.test_client()
+    
+    # Try to access booking page without authentication
+    response = client.get('/book', follow_redirects=False)
+    
+    # Should redirect to signin
+    assert response.status_code == 302
+    assert '/signin' in response.location
+
+
+def test_book_route_requires_verification():
+    """
+    Test that the booking route requires email verification.
+    
+    Requirements: 3.5, 7.1
+    """
+    from src.database import Base, engine, db_session
+    from src.models import User
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Create an unverified test user
+        user = User(email='unverified@example.com', is_verified=False)
+        user.set_password('password123')
+        db_session.add(user)
+        db_session.commit()
+        user_id = user.id
+        
+        # Simulate authenticated but unverified session
+        with client.session_transaction() as sess:
+            sess['user_id'] = user_id
+            sess['user_email'] = 'unverified@example.com'
+        
+        # Try to access booking page
+        response = client.get('/book', follow_redirects=False)
+        
+        # Should redirect to home with error message
+        assert response.status_code == 302
+        assert '/' in response.location
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+def test_book_page_get():
+    """
+    Test that the booking page displays the booking form.
+    
+    Requirements: 7.1
+    """
+    from src.database import Base, engine, db_session
+    from src.models import User
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Create a verified test user
+        user = User(email='verified@example.com', is_verified=True)
+        user.set_password('password123')
+        db_session.add(user)
+        db_session.commit()
+        user_id = user.id
+        
+        # Simulate authenticated and verified session
+        with client.session_transaction() as sess:
+            sess['user_id'] = user_id
+            sess['user_email'] = 'verified@example.com'
+        
+        # Access booking page
+        response = client.get('/book')
+        
+        # Verify successful response
+        assert response.status_code == 200
+        
+        # Verify booking form is present
+        assert b'Book Your Sailing Voyage' in response.data
+        assert b'Start Date' in response.data
+        assert b'End Date' in response.data
+        assert b'Create Booking' in response.data
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+def test_book_page_includes_date_inputs():
+    """
+    Test that the booking page includes date input fields.
+    
+    Requirements: 7.1
+    """
+    from src.database import Base, engine, db_session
+    from src.models import User
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Create a verified test user
+        user = User(email='verified@example.com', is_verified=True)
+        user.set_password('password123')
+        db_session.add(user)
+        db_session.commit()
+        user_id = user.id
+        
+        # Simulate authenticated and verified session
+        with client.session_transaction() as sess:
+            sess['user_id'] = user_id
+            sess['user_email'] = 'verified@example.com'
+        
+        # Access booking page
+        response = client.get('/book')
+        
+        # Verify date input fields are present
+        assert b'type="date"' in response.data
+        assert b'name="start_date"' in response.data
+        assert b'name="end_date"' in response.data
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+def test_book_post_success():
+    """
+    Test that booking creation succeeds with valid dates.
+    
+    Requirements: 7.2
+    """
+    from src.database import Base, engine, db_session
+    from src.models import User, Booking
+    from datetime import date, timedelta
+    from unittest.mock import patch
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Create a verified test user
+        user = User(email='verified@example.com', is_verified=True)
+        user.set_password('password123')
+        db_session.add(user)
+        db_session.commit()
+        user_id = user.id
+        
+        # Simulate authenticated and verified session
+        with client.session_transaction() as sess:
+            sess['user_id'] = user_id
+            sess['user_email'] = 'verified@example.com'
+        
+        # Create booking with future dates
+        start_date = date.today() + timedelta(days=30)
+        end_date = start_date + timedelta(days=7)
+        
+        # Mock send_booking_confirmation to avoid email sending
+        with patch('src.email_service.send_booking_confirmation') as mock_send:
+            mock_send.return_value = True
+            
+            # Submit booking
+            response = client.post('/book', data={
+                'start_date': start_date.strftime('%Y-%m-%d'),
+                'end_date': end_date.strftime('%Y-%m-%d')
+            }, follow_redirects=False)
+        
+        # Should redirect to calendar
+        assert response.status_code == 302
+        assert '/calendar' in response.location
+        
+        # Verify booking was created in database
+        booking = db_session.query(Booking).filter_by(user_id=user_id).first()
+        assert booking is not None
+        assert booking.start_date == start_date
+        assert booking.end_date == end_date
+        assert booking.status == 'confirmed'
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+def test_book_post_missing_dates():
+    """
+    Test that booking creation fails with missing dates.
+    
+    Requirements: 7.2
+    """
+    from src.database import Base, engine, db_session
+    from src.models import User
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Create a verified test user
+        user = User(email='verified@example.com', is_verified=True)
+        user.set_password('password123')
+        db_session.add(user)
+        db_session.commit()
+        user_id = user.id
+        
+        # Simulate authenticated and verified session
+        with client.session_transaction() as sess:
+            sess['user_id'] = user_id
+            sess['user_email'] = 'verified@example.com'
+        
+        # Submit booking without dates
+        response = client.post('/book', data={})
+        
+        # Should return 400 with error
+        assert response.status_code == 400
+        assert b'required' in response.data.lower()
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+def test_book_post_invalid_date_format():
+    """
+    Test that booking creation fails with invalid date format.
+    
+    Requirements: 7.2
+    """
+    from src.database import Base, engine, db_session
+    from src.models import User
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Create a verified test user
+        user = User(email='verified@example.com', is_verified=True)
+        user.set_password('password123')
+        db_session.add(user)
+        db_session.commit()
+        user_id = user.id
+        
+        # Simulate authenticated and verified session
+        with client.session_transaction() as sess:
+            sess['user_id'] = user_id
+            sess['user_email'] = 'verified@example.com'
+        
+        # Submit booking with invalid date format
+        response = client.post('/book', data={
+            'start_date': 'invalid-date',
+            'end_date': '2024-12-31'
+        })
+        
+        # Should return 400 with error
+        assert response.status_code == 400
+        assert b'Invalid date format' in response.data
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+def test_book_post_end_before_start():
+    """
+    Test that booking creation fails when end date is before start date.
+    
+    Requirements: 7.2
+    """
+    from src.database import Base, engine, db_session
+    from src.models import User
+    from datetime import date, timedelta
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Create a verified test user
+        user = User(email='verified@example.com', is_verified=True)
+        user.set_password('password123')
+        db_session.add(user)
+        db_session.commit()
+        user_id = user.id
+        
+        # Simulate authenticated and verified session
+        with client.session_transaction() as sess:
+            sess['user_id'] = user_id
+            sess['user_email'] = 'verified@example.com'
+        
+        # Create booking with end date before start date
+        start_date = date.today() + timedelta(days=30)
+        end_date = start_date - timedelta(days=1)
+        
+        # Submit booking
+        response = client.post('/book', data={
+            'start_date': start_date.strftime('%Y-%m-%d'),
+            'end_date': end_date.strftime('%Y-%m-%d')
+        })
+        
+        # Should return 400 with error
+        assert response.status_code == 400
+        assert b'End date must be after start date' in response.data
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+def test_book_post_overlapping_booking():
+    """
+    Test that booking creation fails when dates overlap with existing booking.
+    
+    Requirements: 7.3
+    """
+    from src.database import Base, engine, db_session
+    from src.models import User, Booking
+    from datetime import date, timedelta
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Create a verified test user
+        user = User(email='verified@example.com', is_verified=True)
+        user.set_password('password123')
+        db_session.add(user)
+        db_session.commit()
+        user_id = user.id
+        
+        # Create an existing booking
+        existing_start = date.today() + timedelta(days=30)
+        existing_end = existing_start + timedelta(days=7)
+        existing_booking = Booking(
+            user_id=user_id,
+            start_date=existing_start,
+            end_date=existing_end,
+            status='confirmed'
+        )
+        db_session.add(existing_booking)
+        db_session.commit()
+        
+        # Simulate authenticated and verified session
+        with client.session_transaction() as sess:
+            sess['user_id'] = user_id
+            sess['user_email'] = 'verified@example.com'
+        
+        # Try to create overlapping booking
+        overlap_start = existing_start + timedelta(days=3)
+        overlap_end = overlap_start + timedelta(days=7)
+        
+        # Submit booking
+        response = client.post('/book', data={
+            'start_date': overlap_start.strftime('%Y-%m-%d'),
+            'end_date': overlap_end.strftime('%Y-%m-%d')
+        })
+        
+        # Should return 400 with error
+        assert response.status_code == 400
+        assert b'overlap' in response.data.lower() or b'not available' in response.data.lower()
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+def test_book_post_success_message():
+    """
+    Test that successful booking shows success message.
+    
+    Requirements: 7.2
+    """
+    from src.database import Base, engine, db_session
+    from src.models import User
+    from datetime import date, timedelta
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Create a verified test user
+        user = User(email='verified@example.com', is_verified=True)
+        user.set_password('password123')
+        db_session.add(user)
+        db_session.commit()
+        user_id = user.id
+        
+        # Simulate authenticated and verified session
+        with client.session_transaction() as sess:
+            sess['user_id'] = user_id
+            sess['user_email'] = 'verified@example.com'
+        
+        # Create booking with future dates
+        start_date = date.today() + timedelta(days=30)
+        end_date = start_date + timedelta(days=7)
+        
+        # Initialize session for flash messages
+        with client.session_transaction() as sess:
+            pass
+        
+        # Submit booking
+        response = client.post('/book', data={
+            'start_date': start_date.strftime('%Y-%m-%d'),
+            'end_date': end_date.strftime('%Y-%m-%d')
+        }, follow_redirects=False)
+        
+        # Check that flash message was set
+        with client.session_transaction() as sess:
+            flashes = dict(sess.get('_flashes', []))
+            assert any('success' in str(msg).lower() or 'created' in str(msg).lower() for msg in flashes.values())
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+def test_book_form_preserves_dates_on_error():
+    """
+    Test that booking form preserves dates on validation error.
+    
+    Requirements: 7.2
+    """
+    from src.database import Base, engine, db_session
+    from src.models import User
+    from datetime import date, timedelta
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Create a verified test user
+        user = User(email='verified@example.com', is_verified=True)
+        user.set_password('password123')
+        db_session.add(user)
+        db_session.commit()
+        user_id = user.id
+        
+        # Simulate authenticated and verified session
+        with client.session_transaction() as sess:
+            sess['user_id'] = user_id
+            sess['user_email'] = 'verified@example.com'
+        
+        # Create booking with end date before start date
+        start_date = date.today() + timedelta(days=30)
+        end_date = start_date - timedelta(days=1)
+        
+        # Submit booking
+        response = client.post('/book', data={
+            'start_date': start_date.strftime('%Y-%m-%d'),
+            'end_date': end_date.strftime('%Y-%m-%d')
+        })
+        
+        # Dates should be preserved in the form
+        assert start_date.strftime('%Y-%m-%d').encode() in response.data
+        assert end_date.strftime('%Y-%m-%d').encode() in response.data
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+def test_book_page_includes_calendar_link():
+    """
+    Test that the booking page includes a link to view the calendar.
+    
+    Requirements: 7.1
+    """
+    from src.database import Base, engine, db_session
+    from src.models import User
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Create a verified test user
+        user = User(email='verified@example.com', is_verified=True)
+        user.set_password('password123')
+        db_session.add(user)
+        db_session.commit()
+        user_id = user.id
+        
+        # Simulate authenticated and verified session
+        with client.session_transaction() as sess:
+            sess['user_id'] = user_id
+            sess['user_email'] = 'verified@example.com'
+        
+        # Access booking page
+        response = client.get('/book')
+        
+        # Verify calendar link is present
+        assert b'View Calendar' in response.data
+        assert b'/calendar' in response.data
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+def test_book_page_includes_voyage_info():
+    """
+    Test that the booking page includes information about voyages.
+    
+    Requirements: 7.1
+    """
+    from src.database import Base, engine, db_session
+    from src.models import User
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Create a verified test user
+        user = User(email='verified@example.com', is_verified=True)
+        user.set_password('password123')
+        db_session.add(user)
+        db_session.commit()
+        user_id = user.id
+        
+        # Simulate authenticated and verified session
+        with client.session_transaction() as sess:
+            sess['user_id'] = user_id
+            sess['user_email'] = 'verified@example.com'
+        
+        # Access booking page
+        response = client.get('/book')
+        
+        # Verify voyage information is present
+        assert b'one week' in response.data.lower() or b'7 days' in response.data.lower()
+        assert b'confirmation email' in response.data.lower()
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+
+def test_book_post_sends_confirmation_email():
+    """
+    Test that booking creation sends a confirmation email.
+    
+    This test verifies that send_booking_confirmation() is called
+    after a successful booking is created with both booking and user objects.
+    
+    Requirements: 7.6
+    """
+    from src.database import Base, engine, db_session
+    from src.models import User
+    from datetime import date, timedelta
+    from unittest.mock import patch
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Create a verified test user
+        user = User(email='verified@example.com', is_verified=True)
+        user.set_password('password123')
+        db_session.add(user)
+        db_session.commit()
+        user_id = user.id
+        
+        # Simulate authenticated and verified session
+        with client.session_transaction() as sess:
+            sess['user_id'] = user_id
+            sess['user_email'] = 'verified@example.com'
+        
+        # Create booking with future dates
+        start_date = date.today() + timedelta(days=30)
+        end_date = start_date + timedelta(days=7)
+        
+        # Mock send_booking_confirmation at the email_service module level
+        with patch('src.email_service.send_booking_confirmation') as mock_send:
+            mock_send.return_value = True
+            
+            # Submit booking
+            response = client.post('/book', data={
+                'start_date': start_date.strftime('%Y-%m-%d'),
+                'end_date': end_date.strftime('%Y-%m-%d')
+            }, follow_redirects=False)
+            
+            # Verify send_booking_confirmation was called
+            assert mock_send.called
+            assert mock_send.call_count == 1
+            
+            # Verify it was called with 2 arguments (booking and user)
+            call_args = mock_send.call_args[0]
+            assert len(call_args) == 2
+            
+            # Verify the arguments are the right types
+            booking_arg, user_arg = call_args
+            assert booking_arg.__class__.__name__ == 'Booking'
+            assert user_arg.__class__.__name__ == 'User'
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+def test_book_post_email_failure_does_not_fail_booking():
+    """
+    Test that email sending failure does not prevent booking creation.
+    
+    This test verifies that if send_booking_confirmation() fails,
+    the booking is still created and the user is notified.
+    
+    Requirements: 7.6
+    """
+    from src.database import Base, engine, db_session
+    from src.models import User, Booking
+    from datetime import date, timedelta
+    from unittest.mock import patch
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Create a verified test user
+        user = User(email='verified@example.com', is_verified=True)
+        user.set_password('password123')
+        db_session.add(user)
+        db_session.commit()
+        user_id = user.id
+        
+        # Simulate authenticated and verified session
+        with client.session_transaction() as sess:
+            sess['user_id'] = user_id
+            sess['user_email'] = 'verified@example.com'
+        
+        # Create booking with future dates
+        start_date = date.today() + timedelta(days=30)
+        end_date = start_date + timedelta(days=7)
+        
+        # Mock send_booking_confirmation to raise an exception
+        with patch('src.email_service.send_booking_confirmation') as mock_send:
+            mock_send.side_effect = Exception("SMTP connection failed")
+            
+            # Submit booking
+            response = client.post('/book', data={
+                'start_date': start_date.strftime('%Y-%m-%d'),
+                'end_date': end_date.strftime('%Y-%m-%d')
+            }, follow_redirects=False)
+            
+            # Should still redirect to calendar (booking succeeded)
+            assert response.status_code == 302
+            assert '/calendar' in response.location
+            
+            # Verify booking was created in database despite email failure
+            booking = db_session.query(Booking).filter_by(user_id=user_id).first()
+            assert booking is not None
+            assert booking.start_date == start_date
+            assert booking.end_date == end_date
+            assert booking.status == 'confirmed'
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+def test_book_post_email_failure_shows_warning():
+    """
+    Test that email sending failure shows a warning message to the user.
+    
+    This test verifies that if send_booking_confirmation() fails,
+    the user sees a warning message indicating the email could not be sent.
+    
+    Requirements: 7.6
+    """
+    from src.database import Base, engine, db_session
+    from src.models import User
+    from datetime import date, timedelta
+    from unittest.mock import patch
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Create a verified test user
+        user = User(email='verified@example.com', is_verified=True)
+        user.set_password('password123')
+        db_session.add(user)
+        db_session.commit()
+        user_id = user.id
+        
+        # Simulate authenticated and verified session
+        with client.session_transaction() as sess:
+            sess['user_id'] = user_id
+            sess['user_email'] = 'verified@example.com'
+        
+        # Create booking with future dates
+        start_date = date.today() + timedelta(days=30)
+        end_date = start_date + timedelta(days=7)
+        
+        # Mock send_booking_confirmation to raise an exception
+        with patch('src.email_service.send_booking_confirmation') as mock_send:
+            mock_send.side_effect = Exception("SMTP connection failed")
+            
+            # Submit booking and follow redirects to see flash messages
+            response = client.post('/book', data={
+                'start_date': start_date.strftime('%Y-%m-%d'),
+                'end_date': end_date.strftime('%Y-%m-%d')
+            }, follow_redirects=True)
+            
+            # Verify warning message is shown
+            assert b'Booking created successfully' in response.data
+            assert b'could not send the confirmation email' in response.data
+            assert b'contact support' in response.data
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+def test_book_post_email_success_shows_success_message():
+    """
+    Test that successful email sending shows a success message.
+    
+    This test verifies that when send_booking_confirmation() succeeds,
+    the user sees a success message indicating the email was sent.
+    
+    Requirements: 7.6
+    """
+    from src.database import Base, engine, db_session
+    from src.models import User
+    from datetime import date, timedelta
+    from unittest.mock import patch
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Create a verified test user
+        user = User(email='verified@example.com', is_verified=True)
+        user.set_password('password123')
+        db_session.add(user)
+        db_session.commit()
+        user_id = user.id
+        
+        # Simulate authenticated and verified session
+        with client.session_transaction() as sess:
+            sess['user_id'] = user_id
+            sess['user_email'] = 'verified@example.com'
+        
+        # Create booking with future dates
+        start_date = date.today() + timedelta(days=30)
+        end_date = start_date + timedelta(days=7)
+        
+        # Mock send_booking_confirmation to succeed
+        with patch('src.email_service.send_booking_confirmation') as mock_send:
+            mock_send.return_value = True
+            
+            # Submit booking and follow redirects to see flash messages
+            response = client.post('/book', data={
+                'start_date': start_date.strftime('%Y-%m-%d'),
+                'end_date': end_date.strftime('%Y-%m-%d')
+            }, follow_redirects=True)
+            
+            # Verify success message is shown
+            assert b'Booking created successfully' in response.data
+            assert b'confirmation email has been sent' in response.data
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+def test_forum_page_requires_authentication():
+    """
+    Test that the forum page requires authentication.
+    
+    Requirements: 8.6
+    """
+    from src.database import Base, engine, db_session
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Try to access forum without authentication
+        response = client.get('/forum', follow_redirects=False)
+        
+        # Should redirect to signin
+        assert response.status_code == 302
+        assert '/signin' in response.location
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+def test_forum_page_requires_verification():
+    """
+    Test that the forum page requires email verification.
+    
+    Requirements: 8.6
+    """
+    from src.database import Base, engine, db_session
+    from src.models import User
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Create an unverified test user
+        user = User(email='unverified@example.com', is_verified=False)
+        user.set_password('password123')
+        db_session.add(user)
+        db_session.commit()
+        user_id = user.id
+        
+        # Simulate an unverified user session
+        with client.session_transaction() as session:
+            session['user_id'] = user_id
+            session['user_email'] = 'unverified@example.com'
+        
+        # Try to access forum
+        response = client.get('/forum', follow_redirects=False)
+        
+        # Should redirect to home with error message
+        assert response.status_code == 302
+        assert '/' in response.location
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+def test_forum_page_displays_posts():
+    """
+    Test that the forum page displays all posts with author and timestamp.
+    
+    Requirements: 8.1, 8.3
+    """
+    from src.database import Base, engine, db_session
+    from src.models import User, ForumPost
+    from datetime import datetime
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Create a verified test user
+        user = User(email='verified@example.com', is_verified=True)
+        user.set_password('password123')
+        db_session.add(user)
+        db_session.commit()
+        user_id = user.id
+        
+        # Create test forum posts
+        post1 = ForumPost(
+            user_id=user_id,
+            title='First Post',
+            content='This is the first post content'
+        )
+        post2 = ForumPost(
+            user_id=user_id,
+            title='Second Post',
+            content='This is the second post content'
+        )
+        db_session.add(post1)
+        db_session.add(post2)
+        db_session.commit()
+        
+        # Simulate an authenticated session
+        with client.session_transaction() as session:
+            session['user_id'] = user_id
+            session['user_email'] = 'verified@example.com'
+        
+        # Access forum page
+        response = client.get('/forum')
+        
+        # Verify successful response
+        assert response.status_code == 200
+        
+        # Verify forum content is present
+        assert b'Discussion Forum' in response.data
+        assert b'First Post' in response.data
+        assert b'Second Post' in response.data
+        assert b'This is the first post content' in response.data
+        assert b'This is the second post content' in response.data
+        
+        # Verify author is displayed
+        assert b'verified@example.com' in response.data
+        
+        # Verify timestamp is displayed (check for date format elements)
+        assert b'2024' in response.data or b'2025' in response.data
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+def test_forum_page_displays_replies():
+    """
+    Test that the forum page displays replies to posts.
+    
+    Requirements: 8.1, 8.3
+    """
+    from src.database import Base, engine, db_session
+    from src.models import User, ForumPost, ForumReply
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Create verified test users
+        user1 = User(email='user1@example.com', is_verified=True)
+        user1.set_password('password123')
+        user2 = User(email='user2@example.com', is_verified=True)
+        user2.set_password('password123')
+        db_session.add(user1)
+        db_session.add(user2)
+        db_session.commit()
+        user1_id = user1.id
+        user2_id = user2.id
+        
+        # Create a forum post
+        post = ForumPost(
+            user_id=user1_id,
+            title='Post with Replies',
+            content='This post has replies'
+        )
+        db_session.add(post)
+        db_session.commit()
+        post_id = post.id
+        
+        # Create replies
+        reply1 = ForumReply(
+            post_id=post_id,
+            user_id=user2_id,
+            content='This is the first reply'
+        )
+        reply2 = ForumReply(
+            post_id=post_id,
+            user_id=user1_id,
+            content='This is the second reply'
+        )
+        db_session.add(reply1)
+        db_session.add(reply2)
+        db_session.commit()
+        
+        # Simulate an authenticated session
+        with client.session_transaction() as session:
+            session['user_id'] = user1_id
+            session['user_email'] = 'user1@example.com'
+        
+        # Access forum page
+        response = client.get('/forum')
+        
+        # Verify successful response
+        assert response.status_code == 200
+        
+        # Verify post and replies are displayed
+        assert b'Post with Replies' in response.data
+        assert b'This post has replies' in response.data
+        assert b'This is the first reply' in response.data
+        assert b'This is the second reply' in response.data
+        
+        # Verify reply authors are displayed
+        assert b'user1@example.com' in response.data
+        assert b'user2@example.com' in response.data
+        
+        # Verify replies section is present
+        assert b'Replies' in response.data
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+def test_forum_page_empty_state():
+    """
+    Test that the forum page displays appropriate message when no posts exist.
+    
+    Requirements: 8.1
+    """
+    from src.database import Base, engine, db_session
+    from src.models import User
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Create a verified test user
+        user = User(email='verified@example.com', is_verified=True)
+        user.set_password('password123')
+        db_session.add(user)
+        db_session.commit()
+        user_id = user.id
+        
+        # Simulate an authenticated session
+        with client.session_transaction() as session:
+            session['user_id'] = user_id
+            session['user_email'] = 'verified@example.com'
+        
+        # Access forum page
+        response = client.get('/forum')
+        
+        # Verify successful response
+        assert response.status_code == 200
+        
+        # Verify empty state message is displayed
+        assert b'No posts yet' in response.data
+        assert b'Be the first to start a discussion' in response.data
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+def test_forum_page_includes_create_post_link():
+    """
+    Test that the forum page includes a link to create new posts.
+    
+    Requirements: 8.1
+    """
+    from src.database import Base, engine, db_session
+    from src.models import User
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Create a verified test user
+        user = User(email='verified@example.com', is_verified=True)
+        user.set_password('password123')
+        db_session.add(user)
+        db_session.commit()
+        user_id = user.id
+        
+        # Simulate an authenticated session
+        with client.session_transaction() as session:
+            session['user_id'] = user_id
+            session['user_email'] = 'verified@example.com'
+        
+        # Access forum page
+        response = client.get('/forum')
+        
+        # Verify successful response
+        assert response.status_code == 200
+        
+        # Verify create post link is present
+        assert b'Create New Post' in response.data or b'Create First Post' in response.data
+        assert b'/forum/new' in response.data
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+def test_forum_page_post_ordering():
+    """
+    Test that forum posts are ordered by creation date (newest first).
+    
+    Requirements: 8.1
+    """
+    from src.database import Base, engine, db_session
+    from src.models import User, ForumPost
+    from datetime import datetime, timedelta
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Create a verified test user
+        user = User(email='verified@example.com', is_verified=True)
+        user.set_password('password123')
+        db_session.add(user)
+        db_session.commit()
+        user_id = user.id
+        
+        # Create posts with different timestamps
+        old_post = ForumPost(
+            user_id=user_id,
+            title='Old Post',
+            content='This is an old post'
+        )
+        old_post.created_at = datetime.utcnow() - timedelta(days=2)
+        
+        new_post = ForumPost(
+            user_id=user_id,
+            title='New Post',
+            content='This is a new post'
+        )
+        new_post.created_at = datetime.utcnow()
+        
+        db_session.add(old_post)
+        db_session.add(new_post)
+        db_session.commit()
+        
+        # Simulate an authenticated session
+        with client.session_transaction() as session:
+            session['user_id'] = user_id
+            session['user_email'] = 'verified@example.com'
+        
+        # Access forum page
+        response = client.get('/forum')
+        
+        # Verify successful response
+        assert response.status_code == 200
+        
+        # Verify both posts are present
+        assert b'Old Post' in response.data
+        assert b'New Post' in response.data
+        
+        # Verify new post appears before old post (by checking byte positions)
+        new_post_pos = response.data.find(b'New Post')
+        old_post_pos = response.data.find(b'Old Post')
+        assert new_post_pos < old_post_pos, "New post should appear before old post"
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+def test_new_post_page_get():
+    """
+    Test that the new post page displays the post creation form.
+    
+    Requirements: 8.2
+    """
+    from src.database import Base, engine, db_session
+    from src.models import User
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Create a verified test user
+        user = User(email='verified@example.com', is_verified=True)
+        user.set_password('password123')
+        db_session.add(user)
+        db_session.commit()
+        user_id = user.id
+        
+        # Simulate an authenticated session
+        with client.session_transaction() as session:
+            session['user_id'] = user_id
+            session['user_email'] = 'verified@example.com'
+        
+        # Access new post page
+        response = client.get('/forum/new')
+        
+        # Verify successful response
+        assert response.status_code == 200
+        
+        # Verify form elements are present
+        assert b'Create New Post' in response.data
+        assert b'Post Title' in response.data
+        assert b'Post Content' in response.data
+        assert b'Create Post' in response.data
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+def test_new_post_page_requires_authentication():
+    """
+    Test that the new post page requires authentication.
+    
+    Requirements: 8.2, 8.6
+    """
+    app = create_app()
+    client = app.test_client()
+    
+    # Access new post page without authentication
+    response = client.get('/forum/new', follow_redirects=False)
+    
+    # Should redirect to signin
+    assert response.status_code == 302
+    assert '/signin' in response.location
+
+
+def test_new_post_page_requires_verification():
+    """
+    Test that the new post page requires email verification.
+    
+    Requirements: 8.2, 8.6
+    """
+    from src.database import Base, engine, db_session
+    from src.models import User
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Create an unverified test user
+        user = User(email='unverified@example.com', is_verified=False)
+        user.set_password('password123')
+        db_session.add(user)
+        db_session.commit()
+        user_id = user.id
+        
+        # Simulate an authenticated but unverified session
+        with client.session_transaction() as session:
+            session['user_id'] = user_id
+            session['user_email'] = 'unverified@example.com'
+        
+        # Access new post page
+        response = client.get('/forum/new', follow_redirects=False)
+        
+        # Should redirect to home or show error
+        assert response.status_code == 302
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+def test_new_post_post_success():
+    """
+    Test that verified user can create a new post successfully.
+    
+    Requirements: 8.2
+    """
+    from src.database import Base, engine, db_session
+    from src.models import User, ForumPost
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Create a verified test user
+        user = User(email='verified@example.com', is_verified=True)
+        user.set_password('password123')
+        db_session.add(user)
+        db_session.commit()
+        user_id = user.id
+        
+        # Simulate an authenticated session
+        with client.session_transaction() as session:
+            session['user_id'] = user_id
+            session['user_email'] = 'verified@example.com'
+        
+        # Submit new post
+        response = client.post('/forum/new', data={
+            'title': 'Test Post Title',
+            'content': 'This is the content of my test post.'
+        }, follow_redirects=False)
+        
+        # Should redirect to forum
+        assert response.status_code == 302
+        assert '/forum' in response.location
+        
+        # Verify post was created in database
+        post = db_session.query(ForumPost).filter_by(title='Test Post Title').first()
+        assert post is not None
+        assert post.content == 'This is the content of my test post.'
+        assert post.user_id == user_id
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+def test_new_post_post_empty_title():
+    """
+    Test that new post creation rejects empty title.
+    
+    Requirements: 8.2
+    """
+    from src.database import Base, engine, db_session
+    from src.models import User
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Create a verified test user
+        user = User(email='verified@example.com', is_verified=True)
+        user.set_password('password123')
+        db_session.add(user)
+        db_session.commit()
+        user_id = user.id
+        
+        # Simulate an authenticated session
+        with client.session_transaction() as session:
+            session['user_id'] = user_id
+            session['user_email'] = 'verified@example.com'
+        
+        # Submit new post with empty title
+        response = client.post('/forum/new', data={
+            'title': '',
+            'content': 'This is the content of my test post.'
+        })
+        
+        # Should return 400 with error
+        assert response.status_code == 400
+        assert b'Title is required' in response.data
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+def test_new_post_post_empty_content():
+    """
+    Test that new post creation rejects empty content.
+    
+    Requirements: 8.2
+    """
+    from src.database import Base, engine, db_session
+    from src.models import User
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Create a verified test user
+        user = User(email='verified@example.com', is_verified=True)
+        user.set_password('password123')
+        db_session.add(user)
+        db_session.commit()
+        user_id = user.id
+        
+        # Simulate an authenticated session
+        with client.session_transaction() as session:
+            session['user_id'] = user_id
+            session['user_email'] = 'verified@example.com'
+        
+        # Submit new post with empty content
+        response = client.post('/forum/new', data={
+            'title': 'Test Post Title',
+            'content': ''
+        })
+        
+        # Should return 400 with error
+        assert response.status_code == 400
+        assert b'Content is required' in response.data
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+def test_new_post_form_preserves_data_on_error():
+    """
+    Test that new post form preserves data on validation error.
+    
+    Requirements: 8.2
+    """
+    from src.database import Base, engine, db_session
+    from src.models import User
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Create a verified test user
+        user = User(email='verified@example.com', is_verified=True)
+        user.set_password('password123')
+        db_session.add(user)
+        db_session.commit()
+        user_id = user.id
+        
+        # Simulate an authenticated session
+        with client.session_transaction() as session:
+            session['user_id'] = user_id
+            session['user_email'] = 'verified@example.com'
+        
+        # Submit new post with empty content
+        response = client.post('/forum/new', data={
+            'title': 'Test Post Title',
+            'content': ''
+        })
+        
+        # Title should be preserved in the form
+        assert b'Test Post Title' in response.data
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+def test_new_post_success_message():
+    """
+    Test that successful post creation shows success message.
+    
+    Requirements: 8.2
+    """
+    from src.database import Base, engine, db_session
+    from src.models import User
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Create a verified test user
+        user = User(email='verified@example.com', is_verified=True)
+        user.set_password('password123')
+        db_session.add(user)
+        db_session.commit()
+        user_id = user.id
+        
+        # Simulate an authenticated session
+        with client.session_transaction() as session:
+            session['user_id'] = user_id
+            session['user_email'] = 'verified@example.com'
+        
+        # Submit new post
+        response = client.post('/forum/new', data={
+            'title': 'Test Post Title',
+            'content': 'This is the content of my test post.'
+        }, follow_redirects=True)
+        
+        # Should show success message
+        assert b'Post created successfully!' in response.data
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+def test_new_post_redirects_to_forum():
+    """
+    Test that successful post creation redirects to forum page.
+    
+    Requirements: 8.2
+    """
+    from src.database import Base, engine, db_session
+    from src.models import User
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Create a verified test user
+        user = User(email='verified@example.com', is_verified=True)
+        user.set_password('password123')
+        db_session.add(user)
+        db_session.commit()
+        user_id = user.id
+        
+        # Simulate an authenticated session
+        with client.session_transaction() as session:
+            session['user_id'] = user_id
+            session['user_email'] = 'verified@example.com'
+        
+        # Submit new post
+        response = client.post('/forum/new', data={
+            'title': 'Test Post Title',
+            'content': 'This is the content of my test post.'
+        }, follow_redirects=True)
+        
+        # Should be on forum page
+        assert response.status_code == 200
+        assert b'Discussion Forum' in response.data
+        assert b'Test Post Title' in response.data
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+def test_new_post_includes_back_link():
+    """
+    Test that new post page includes a link back to forum.
+    
+    Requirements: 8.2
+    """
+    from src.database import Base, engine, db_session
+    from src.models import User
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Create a verified test user
+        user = User(email='verified@example.com', is_verified=True)
+        user.set_password('password123')
+        db_session.add(user)
+        db_session.commit()
+        user_id = user.id
+        
+        # Simulate an authenticated session
+        with client.session_transaction() as session:
+            session['user_id'] = user_id
+            session['user_email'] = 'verified@example.com'
+        
+        # Access new post page
+        response = client.get('/forum/new')
+        
+        # Verify back link is present
+        assert b'Back to Forum' in response.data
+        assert b'/forum' in response.data
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+def test_reply_route_get_requires_authentication():
+    """
+    Test that the reply route (GET) requires authentication.
+    
+    Requirements: 8.4
+    """
+    from src.database import Base, engine, db_session
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Try to access reply page without authentication
+        response = client.get('/forum/1/reply', follow_redirects=False)
+        
+        # Should redirect to signin
+        assert response.status_code == 302
+        assert '/signin' in response.location
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+def test_reply_route_get_requires_verification():
+    """
+    Test that the reply route (GET) requires email verification.
+    
+    Requirements: 8.4
+    """
+    from src.database import Base, engine, db_session
+    from src.models import User
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Create an unverified test user
+        user = User(email='unverified@example.com', is_verified=False)
+        user.set_password('password123')
+        db_session.add(user)
+        db_session.commit()
+        user_id = user.id
+        
+        # Simulate an authenticated but unverified session
+        with client.session_transaction() as session:
+            session['user_id'] = user_id
+            session['user_email'] = 'unverified@example.com'
+        
+        # Try to access reply page
+        response = client.get('/forum/1/reply', follow_redirects=False)
+        
+        # Should redirect (verification required)
+        assert response.status_code == 302
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+def test_reply_route_get_displays_form():
+    """
+    Test that the reply route (GET) displays the reply form.
+    
+    Requirements: 8.4
+    """
+    from src.database import Base, engine, db_session
+    from src.models import User, ForumPost
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Create a verified test user
+        user = User(email='verified@example.com', is_verified=True)
+        user.set_password('password123')
+        db_session.add(user)
+        db_session.commit()
+        user_id = user.id
+        
+        # Create a test post
+        post = ForumPost(
+            user_id=user_id,
+            title='Test Post',
+            content='This is a test post.'
+        )
+        db_session.add(post)
+        db_session.commit()
+        post_id = post.id
+        
+        # Simulate an authenticated session
+        with client.session_transaction() as session:
+            session['user_id'] = user_id
+            session['user_email'] = 'verified@example.com'
+        
+        # Access reply page
+        response = client.get(f'/forum/{post_id}/reply')
+        
+        # Verify successful response
+        assert response.status_code == 200
+        
+        # Verify reply form is present
+        assert b'Reply to Post' in response.data
+        assert b'Your Reply' in response.data
+        assert b'Post Reply' in response.data
+        
+        # Verify original post is displayed
+        assert b'Test Post' in response.data
+        assert b'This is a test post.' in response.data
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+def test_reply_route_get_nonexistent_post():
+    """
+    Test that the reply route (GET) handles nonexistent posts.
+    
+    Requirements: 8.4
+    """
+    from src.database import Base, engine, db_session
+    from src.models import User
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Create a verified test user
+        user = User(email='verified@example.com', is_verified=True)
+        user.set_password('password123')
+        db_session.add(user)
+        db_session.commit()
+        user_id = user.id
+        
+        # Simulate an authenticated session
+        with client.session_transaction() as session:
+            session['user_id'] = user_id
+            session['user_email'] = 'verified@example.com'
+        
+        # Try to access reply page for nonexistent post
+        response = client.get('/forum/99999/reply', follow_redirects=False)
+        
+        # Should redirect to forum
+        assert response.status_code == 302
+        assert '/forum' in response.location
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+def test_reply_route_post_creates_reply():
+    """
+    Test that the reply route (POST) creates a reply successfully.
+    
+    Requirements: 8.4
+    """
+    from src.database import Base, engine, db_session
+    from src.models import User, ForumPost, ForumReply
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Create a verified test user
+        user = User(email='verified@example.com', is_verified=True)
+        user.set_password('password123')
+        db_session.add(user)
+        db_session.commit()
+        user_id = user.id
+        
+        # Create a test post
+        post = ForumPost(
+            user_id=user_id,
+            title='Test Post',
+            content='This is a test post.'
+        )
+        db_session.add(post)
+        db_session.commit()
+        post_id = post.id
+        
+        # Simulate an authenticated session
+        with client.session_transaction() as session:
+            session['user_id'] = user_id
+            session['user_email'] = 'verified@example.com'
+        
+        # Submit reply
+        response = client.post(f'/forum/{post_id}/reply', data={
+            'content': 'This is my reply to the post.'
+        }, follow_redirects=False)
+        
+        # Should redirect to forum
+        assert response.status_code == 302
+        assert '/forum' in response.location
+        
+        # Verify reply was created in database
+        reply = db_session.query(ForumReply).filter_by(post_id=post_id).first()
+        assert reply is not None
+        assert reply.content == 'This is my reply to the post.'
+        assert reply.user_id == user_id
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+def test_reply_route_post_empty_content():
+    """
+    Test that the reply route (POST) rejects empty content.
+    
+    Requirements: 8.4
+    """
+    from src.database import Base, engine, db_session
+    from src.models import User, ForumPost
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Create a verified test user
+        user = User(email='verified@example.com', is_verified=True)
+        user.set_password('password123')
+        db_session.add(user)
+        db_session.commit()
+        user_id = user.id
+        
+        # Create a test post
+        post = ForumPost(
+            user_id=user_id,
+            title='Test Post',
+            content='This is a test post.'
+        )
+        db_session.add(post)
+        db_session.commit()
+        post_id = post.id
+        
+        # Simulate an authenticated session
+        with client.session_transaction() as session:
+            session['user_id'] = user_id
+            session['user_email'] = 'verified@example.com'
+        
+        # Submit reply with empty content
+        response = client.post(f'/forum/{post_id}/reply', data={
+            'content': ''
+        })
+        
+        # Should return 400 with error
+        assert response.status_code == 400
+        assert b'Reply content is required' in response.data
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+def test_reply_route_post_whitespace_only_content():
+    """
+    Test that the reply route (POST) rejects whitespace-only content.
+    
+    Requirements: 8.4
+    """
+    from src.database import Base, engine, db_session
+    from src.models import User, ForumPost
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Create a verified test user
+        user = User(email='verified@example.com', is_verified=True)
+        user.set_password('password123')
+        db_session.add(user)
+        db_session.commit()
+        user_id = user.id
+        
+        # Create a test post
+        post = ForumPost(
+            user_id=user_id,
+            title='Test Post',
+            content='This is a test post.'
+        )
+        db_session.add(post)
+        db_session.commit()
+        post_id = post.id
+        
+        # Simulate an authenticated session
+        with client.session_transaction() as session:
+            session['user_id'] = user_id
+            session['user_email'] = 'verified@example.com'
+        
+        # Submit reply with whitespace-only content
+        response = client.post(f'/forum/{post_id}/reply', data={
+            'content': '   \n\t  '
+        })
+        
+        # Should return 400 with error
+        assert response.status_code == 400
+        assert b'cannot be empty' in response.data or b'required' in response.data
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+def test_reply_route_post_nonexistent_post():
+    """
+    Test that the reply route (POST) handles nonexistent posts.
+    
+    Requirements: 8.4
+    """
+    from src.database import Base, engine, db_session
+    from src.models import User
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Create a verified test user
+        user = User(email='verified@example.com', is_verified=True)
+        user.set_password('password123')
+        db_session.add(user)
+        db_session.commit()
+        user_id = user.id
+        
+        # Simulate an authenticated session
+        with client.session_transaction() as session:
+            session['user_id'] = user_id
+            session['user_email'] = 'verified@example.com'
+        
+        # Try to submit reply to nonexistent post
+        response = client.post('/forum/99999/reply', data={
+            'content': 'This is my reply.'
+        }, follow_redirects=False)
+        
+        # Should redirect to forum
+        assert response.status_code == 302
+        assert '/forum' in response.location
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+def test_reply_route_post_redirects_to_forum():
+    """
+    Test that successful reply creation redirects to forum page.
+    
+    Requirements: 8.4
+    """
+    from src.database import Base, engine, db_session
+    from src.models import User, ForumPost
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Create a verified test user
+        user = User(email='verified@example.com', is_verified=True)
+        user.set_password('password123')
+        db_session.add(user)
+        db_session.commit()
+        user_id = user.id
+        
+        # Create a test post
+        post = ForumPost(
+            user_id=user_id,
+            title='Test Post',
+            content='This is a test post.'
+        )
+        db_session.add(post)
+        db_session.commit()
+        post_id = post.id
+        
+        # Simulate an authenticated session
+        with client.session_transaction() as session:
+            session['user_id'] = user_id
+            session['user_email'] = 'verified@example.com'
+        
+        # Submit reply
+        response = client.post(f'/forum/{post_id}/reply', data={
+            'content': 'This is my reply.'
+        }, follow_redirects=True)
+        
+        # Should be on forum page
+        assert response.status_code == 200
+        assert b'Discussion Forum' in response.data
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+def test_reply_route_post_shows_success_message():
+    """
+    Test that successful reply creation shows a success message.
+    
+    Requirements: 8.4
+    """
+    from src.database import Base, engine, db_session
+    from src.models import User, ForumPost
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Create a verified test user
+        user = User(email='verified@example.com', is_verified=True)
+        user.set_password('password123')
+        db_session.add(user)
+        db_session.commit()
+        user_id = user.id
+        
+        # Create a test post
+        post = ForumPost(
+            user_id=user_id,
+            title='Test Post',
+            content='This is a test post.'
+        )
+        db_session.add(post)
+        db_session.commit()
+        post_id = post.id
+        
+        # Simulate an authenticated session
+        with client.session_transaction() as session:
+            session['user_id'] = user_id
+            session['user_email'] = 'verified@example.com'
+        
+        # Submit reply
+        response = client.post(f'/forum/{post_id}/reply', data={
+            'content': 'This is my reply.'
+        }, follow_redirects=True)
+        
+        # Should show success message
+        assert b'Reply posted successfully' in response.data or b'success' in response.data
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+def test_reply_route_includes_cancel_link():
+    """
+    Test that reply page includes a cancel link back to forum.
+    
+    Requirements: 8.4
+    """
+    from src.database import Base, engine, db_session
+    from src.models import User, ForumPost
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Create a verified test user
+        user = User(email='verified@example.com', is_verified=True)
+        user.set_password('password123')
+        db_session.add(user)
+        db_session.commit()
+        user_id = user.id
+        
+        # Create a test post
+        post = ForumPost(
+            user_id=user_id,
+            title='Test Post',
+            content='This is a test post.'
+        )
+        db_session.add(post)
+        db_session.commit()
+        post_id = post.id
+        
+        # Simulate an authenticated session
+        with client.session_transaction() as session:
+            session['user_id'] = user_id
+            session['user_email'] = 'verified@example.com'
+        
+        # Access reply page
+        response = client.get(f'/forum/{post_id}/reply')
+        
+        # Verify cancel link is present
+        assert b'Cancel' in response.data
+        assert b'/forum' in response.data
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+def test_404_error_handler():
+    """
+    Test that 404 errors are handled correctly.
+    
+    This test verifies that accessing a non-existent page returns
+    a 404 status code and displays the error page.
+    """
+    app = create_app()
+    client = app.test_client()
+    
+    # Access a non-existent page
+    response = client.get('/nonexistent-page')
+    
+    # Should return 404
+    assert response.status_code == 404
+    
+    # Should display error page
+    assert b'404' in response.data
+    assert b'Page Not Found' in response.data
+    assert b'does not exist' in response.data
+
+
+def test_404_error_includes_home_link():
+    """
+    Test that 404 error page includes a link to home.
+    
+    This test verifies that the error page provides navigation
+    back to the home page.
+    """
+    app = create_app()
+    client = app.test_client()
+    
+    # Access a non-existent page
+    response = client.get('/nonexistent-page')
+    
+    # Should include home link
+    assert b'Go to Home' in response.data
+    assert b'href="/"' in response.data
+
+
+def test_500_error_handler():
+    """
+    Test that 500 errors are handled correctly.
+    
+    This test verifies that internal server errors return
+    a 500 status code and display the error page.
+    """
+    app = create_app()
+    client = app.test_client()
+    
+    # Create a route that raises an exception
+    @app.route('/test-500')
+    def test_500():
+        raise Exception('Test internal server error')
+    
+    # Access the route
+    response = client.get('/test-500')
+    
+    # Should return 500
+    assert response.status_code == 500
+    
+    # Should display error page
+    assert b'500' in response.data
+    assert b'Internal Server Error' in response.data
+    assert b'unexpected error' in response.data
+
+
+def test_500_error_includes_home_link():
+    """
+    Test that 500 error page includes a link to home.
+    
+    This test verifies that the error page provides navigation
+    back to the home page.
+    """
+    app = create_app()
+    client = app.test_client()
+    
+    # Create a route that raises an exception
+    @app.route('/test-500')
+    def test_500():
+        raise Exception('Test internal server error')
+    
+    # Access the route
+    response = client.get('/test-500')
+    
+    # Should include home link
+    assert b'Go to Home' in response.data
+    assert b'href="/"' in response.data
+
+
+def test_403_error_handler():
+    """
+    Test that 403 errors are handled correctly.
+    
+    This test verifies that forbidden access returns
+    a 403 status code and displays the error page.
+    """
+    from flask import abort
+    
+    app = create_app()
+    client = app.test_client()
+    
+    # Create a route that returns 403
+    @app.route('/test-403')
+    def test_403():
+        abort(403)
+    
+    # Access the route
+    response = client.get('/test-403')
+    
+    # Should return 403
+    assert response.status_code == 403
+    
+    # Should display error page
+    assert b'403' in response.data
+    assert b'Forbidden' in response.data
+    assert b'permission' in response.data
+
+
+def test_403_error_includes_home_link():
+    """
+    Test that 403 error page includes a link to home.
+    
+    This test verifies that the error page provides navigation
+    back to the home page.
+    """
+    from flask import abort
+    
+    app = create_app()
+    client = app.test_client()
+    
+    # Create a route that returns 403
+    @app.route('/test-403')
+    def test_403():
+        abort(403)
+    
+    # Access the route
+    response = client.get('/test-403')
+    
+    # Should include home link
+    assert b'Go to Home' in response.data
+    assert b'href="/"' in response.data
+
+
+def test_401_error_handler():
+    """
+    Test that 401 errors are handled correctly.
+    
+    This test verifies that unauthorized access returns
+    a 401 status code and displays the error page.
+    """
+    from flask import abort
+    
+    app = create_app()
+    client = app.test_client()
+    
+    # Create a route that returns 401
+    @app.route('/test-401')
+    def test_401():
+        abort(401)
+    
+    # Access the route
+    response = client.get('/test-401')
+    
+    # Should return 401
+    assert response.status_code == 401
+    
+    # Should display error page
+    assert b'401' in response.data
+    assert b'Unauthorized' in response.data
+    assert b'Authentication' in response.data
+
+
+def test_401_error_includes_signin_link():
+    """
+    Test that 401 error page includes a link to sign in.
+    
+    This test verifies that the error page provides navigation
+    to the sign in page for authentication.
+    """
+    from flask import abort
+    
+    app = create_app()
+    client = app.test_client()
+    
+    # Create a route that returns 401
+    @app.route('/test-401')
+    def test_401():
+        abort(401)
+    
+    # Access the route
+    response = client.get('/test-401')
+    
+    # Should include sign in link
+    assert b'Sign In' in response.data
+    assert b'/signin' in response.data
+
+
+def test_401_error_includes_home_link():
+    """
+    Test that 401 error page includes a link to home.
+    
+    This test verifies that the error page provides navigation
+    back to the home page.
+    """
+    from flask import abort
+    
+    app = create_app()
+    client = app.test_client()
+    
+    # Create a route that returns 401
+    @app.route('/test-401')
+    def test_401():
+        abort(401)
+    
+    # Access the route
+    response = client.get('/test-401')
+    
+    # Should include home link
+    assert b'Go to Home' in response.data
+    assert b'href="/"' in response.data
+
+
+def test_error_pages_use_base_template():
+    """
+    Test that error pages extend the base template.
+    
+    This test verifies that error pages include the standard
+    navigation and layout from the base template.
+    """
+    app = create_app()
+    client = app.test_client()
+    
+    # Access a non-existent page
+    response = client.get('/nonexistent-page')
+    
+    # Should include base template elements
+    assert b'Camargue Sailing' in response.data
+    assert b'Home' in response.data
+    assert b'Voyages' in response.data
+
+
+def test_500_error_rolls_back_database():
+    """
+    Test that 500 errors rollback database transactions.
+    
+    This test verifies that when a 500 error occurs, any pending
+    database transactions are rolled back to maintain data integrity.
+    """
+    from src.database import Base, engine, db_session
+    from src.models import User
+    
+    # Set up database
+    Base.metadata.create_all(bind=engine)
+    
+    try:
+        app = create_app()
+        client = app.test_client()
+        
+        # Create a route that modifies database then raises exception
+        @app.route('/test-500-db')
+        def test_500_db():
+            user = User(email='test@example.com', is_verified=False)
+            user.set_password('password123')
+            db_session.add(user)
+            # Don't commit - let the error handler rollback
+            raise Exception('Test database rollback')
+        
+        # Access the route
+        response = client.get('/test-500-db')
+        
+        # Should return 500
+        assert response.status_code == 500
+        
+        # User should not be in database (transaction rolled back)
+        user = db_session.query(User).filter_by(email='test@example.com').first()
+        assert user is None
+        
+    finally:
+        # Clean up
+        db_session.remove()
+        Base.metadata.drop_all(bind=engine)
+
+
+def test_error_handler_with_different_methods():
+    """
+    Test that error handlers work with different HTTP methods.
+    
+    This test verifies that error handlers are triggered correctly
+    for POST, PUT, DELETE, etc., not just GET requests.
+    """
+    app = create_app()
+    client = app.test_client()
+    
+    # Test 404 with POST
+    response = client.post('/nonexistent-page')
+    assert response.status_code == 404
+    assert b'404' in response.data
+    
+    # Test 404 with PUT
+    response = client.put('/nonexistent-page')
+    assert response.status_code == 404
+    assert b'404' in response.data
+    
+    # Test 404 with DELETE
+    response = client.delete('/nonexistent-page')
+    assert response.status_code == 404
+    assert b'404' in response.data
