@@ -7,6 +7,8 @@ session management, static files, and templates.
 Requirements: 9.1, 9.3, 9.4, 9.5
 """
 
+import os
+from pathlib import Path
 from flask import Flask, session, redirect, url_for, request
 from src.config import Config
 from src.database import db_session, close_db
@@ -41,13 +43,15 @@ def create_app(config_class=Config):
     # Load configuration
     app.config.from_object(config_class)
     
+    # Configure Babel before initialization
+    # Get absolute path to translations directory
+    base_dir = Path(__file__).parent.parent
+    translations_dir = base_dir / 'translations'
+    app.config['BABEL_TRANSLATION_DIRECTORIES'] = str(translations_dir)
+    app.config['BABEL_DEFAULT_LOCALE'] = 'en'
+    
     # Initialize Flask-Babel for internationalization
     init_babel(app)
-    
-    # Configure Babel
-    app.config['BABEL_TRANSLATION_DIRECTORIES'] = '../translations'
-    app.config['BABEL_DEFAULT_LOCALE'] = 'en'
-    app.config['BABEL_SUPPORTED_LOCALES'] = ['en', 'fr']
     
     # Make get_locale available in templates
     from src.i18n import get_locale
@@ -103,9 +107,30 @@ def create_app(config_class=Config):
         """
         if lang in ['en', 'fr']:
             session['language'] = lang
+            app.logger.info(f'Language set to: {lang}')
         
         # Redirect back to the referring page or home
         return redirect(request.referrer or url_for('home'))
+    
+    # Debug route to test translations
+    @app.route('/test-translation')
+    def test_translation():
+        """Test route to verify translations are working."""
+        from flask_babel import gettext
+        from src.i18n import get_locale
+        
+        locale = get_locale()
+        test_text = gettext('Home')
+        
+        return f"""
+        <h1>Translation Test</h1>
+        <p>Current locale: {locale}</p>
+        <p>Session language: {session.get('language', 'Not set')}</p>
+        <p>Translation of 'Home': {test_text}</p>
+        <p><a href="/set-language/fr">Set to French</a></p>
+        <p><a href="/set-language/en">Set to English</a></p>
+        <p><a href="/">Go to Home</a></p>
+        """
     
     # Public routes
     @app.route('/')

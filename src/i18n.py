@@ -7,8 +7,6 @@ This module provides bilingual support (English/French) using Flask-Babel.
 from flask_babel import Babel
 from flask import request, session
 
-babel = Babel()
-
 
 def get_locale():
     """
@@ -24,10 +22,14 @@ def get_locale():
     """
     # Check if user has explicitly selected a language
     if 'language' in session:
-        return session['language']
+        locale = session['language']
+        print(f"[i18n] Using session language: {locale}")
+        return locale
     
     # Try to match browser's preferred language
-    return request.accept_languages.best_match(['en', 'fr']) or 'en'
+    locale = request.accept_languages.best_match(['en', 'fr']) or 'en'
+    print(f"[i18n] Using browser language: {locale}")
+    return locale
 
 
 def init_babel(app):
@@ -37,4 +39,8 @@ def init_babel(app):
     Args:
         app: Flask application instance
     """
+    # Initialize Babel with locale selector
+    babel = Babel()
     babel.init_app(app, locale_selector=get_locale)
+    
+    return babel
