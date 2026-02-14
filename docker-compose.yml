@@ -42,7 +42,7 @@ services:
 
   nginx:
     image: nginx:alpine
-    container_name: ai-camarguesailing-nginx-${USER_ID}-${HTTP_PORT:-5000}
+    container_name: ai-camarguesailing-nginx-${USER_ID}-${HTTPS_PORT:-5000}
     ports:
       - "${HTTPS_PORT}:443"
     volumes:
