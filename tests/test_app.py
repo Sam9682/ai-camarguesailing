@@ -476,3 +476,121 @@ def test_voyage_options_accessible_without_auth():
     # Should return 200, not redirect to login
     assert response.status_code == 200
     assert b'Voyage Options' in response.data
+
+
+
+def test_signup_page_get():
+    """
+    Test that the signup page displays the registration form.
+    
+    Requirements: 2.1
+    """
+    app = create_app()
+    client = app.test_client()
+    
+    response = client.get('/signup')
+    
+    # Verify successful response
+    assert response.status_code == 200
+    
+    # Verify signup form is present
+    assert b'Create Your Account' in response.data
+    assert b'Email Address' in response.data
+    assert b'Password' in response.data
+    assert b'Confirm Password' in response.data
+    assert b'Sign Up' in response.data
+
+
+def test_signup_page_accessible_without_auth():
+    """
+    Test that the signup page is accessible without authentication.
+    
+    Requirements: 2.1
+    """
+    app = create_app()
+    client = app.test_client()
+    
+    # Access without authentication
+    response = client.get('/signup')
+    
+    # Should return 200, not redirect
+    assert response.status_code == 200
+    assert b'Create Your Account' in response.data
+
+
+def test_signup_redirects_if_logged_in():
+    """
+    Test that the signup page redirects if user is already logged in.
+    
+    Requirements: 2.1
+    """
+    app = create_app()
+    client = app.test_client()
+    
+    # Simulate an authenticated session
+    with client.session_transaction() as session:
+        session['user_id'] = 1
+        session['user_email'] = 'test@example.com'
+    
+    response = client.get('/signup')
+    
+    # Should redirect to home
+    assert response.status_code == 302
+    assert response.location == '/' or response.location.endswith('/')
+
+
+def test_signup_includes_signin_link():
+    """
+    Test that the signup page includes a link to sign in.
+    
+    Requirements: 2.1
+    """
+    app = create_app()
+    client = app.test_client()
+    
+    response = client.get('/signup')
+    
+    # Verify sign in link is present
+    assert b'Already have an account?' in response.data
+    assert b'Sign In' in response.data
+    assert b'/signin' in response.data
+
+
+
+def test_signup_post_password_mismatch():
+    """
+    Test that signup rejects mismatched passwords.
+    
+    Requirements: 2.4
+    """
+    app = create_app()
+    client = app.test_client()
+    
+    response = client.post('/signup', data={
+        'email': 'test@example.com',
+        'password': 'password123',
+        'confirm_password': 'different123'
+    })
+    
+    # Should return 400 with error
+    assert response.status_code == 400
+    assert b'Passwords do not match' in response.data
+
+
+def test_signup_form_preserves_email_on_error():
+    """
+    Test that signup form preserves email on validation error.
+    
+    Requirements: 2.4
+    """
+    app = create_app()
+    client = app.test_client()
+    
+    response = client.post('/signup', data={
+        'email': 'test@example.com',
+        'password': 'password123',
+        'confirm_password': 'different123'
+    })
+    
+    # Email should be preserved in the form
+    assert b'test@example.com' in response.data

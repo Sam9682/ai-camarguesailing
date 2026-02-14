@@ -134,6 +134,99 @@ def create_app(config_class=Config):
         from flask import render_template
         return render_template('voyage_options.html')
     
+    # Authentication routes
+    @app.route('/signup', methods=['GET', 'POST'])
+    def signup():
+        """
+        Sign-up route for user registration.
+        
+        GET: Display registration form with email and password fields
+        POST: Handle registration submission, create user account, send verification email
+        
+        This route validates registration data, checks for duplicate emails,
+        creates unverified user accounts, and sends verification emails.
+        
+        Requirements: 2.1, 2.2, 2.3, 2.4
+        """
+        from flask import render_template, request, redirect, url_for, flash, session
+        from src.auth import register_user, RegistrationError
+        from src.email_service import send_verification_email
+        
+        # If user is already logged in, redirect to home
+        if session.get('user_id'):
+            flash('You are already logged in.', 'info')
+            return redirect(url_for('home'))
+        
+        if request.method == 'GET':
+            # Display registration form
+            return render_template('signup.html')
+        
+        # Handle POST request - registration submission
+        email = request.form.get('email', '').strip()
+        password = request.form.get('password', '')
+        confirm_password = request.form.get('confirm_password', '')
+        
+        errors = {}
+        
+        # Validate that passwords match
+        if password != confirm_password:
+            errors['confirm_password'] = 'Passwords do not match'
+        
+        # If there are validation errors, re-render form with errors
+        if errors:
+            return render_template('signup.html', errors=errors), 400
+        
+        try:
+            # Attempt to register the user
+            user = register_user(email, password)
+            
+            # Send verification email
+            try:
+                send_verification_email(user)
+                flash('Registration successful! Please check your email to verify your account.', 'success')
+            except Exception as e:
+                # Log the error but don't fail registration
+                app.logger.error(f'Failed to send verification email to {email}: {str(e)}')
+                flash('Registration successful! However, we could not send the verification email. Please contact support.', 'warning')
+            
+            # Redirect to sign-in page
+            return redirect(url_for('signin'))
+            
+        except RegistrationError as e:
+            # Handle registration errors (duplicate email, validation failures)
+            error_message = str(e)
+            
+            # Determine which field the error applies to
+            if 'email' in error_message.lower() or 'already registered' in error_message.lower():
+                errors['email'] = error_message
+            elif 'password' in error_message.lower():
+                errors['password'] = error_message
+            else:
+                # General error
+                flash(error_message, 'error')
+            
+            return render_template('signup.html', errors=errors), 400
+        
+        except Exception as e:
+            # Handle unexpected errors
+            app.logger.error(f'Unexpected error during registration: {str(e)}')
+            flash('An unexpected error occurred. Please try again later.', 'error')
+            return render_template('signup.html'), 500
+    
+    @app.route('/signin', methods=['GET'])
+    def signin():
+        """
+        Sign-in route placeholder.
+        
+        This is a temporary placeholder that will be implemented in task 7.3.
+        For now, it just displays a simple message.
+        
+        Requirements: 4.1
+        """
+        from flask import render_template
+        # TODO: Implement full sign-in functionality in task 7.3
+        return '<h1>Sign In</h1><p>Sign-in functionality will be implemented in task 7.3</p><p><a href="/">Back to Home</a></p>'
+    
     return app
 
 
