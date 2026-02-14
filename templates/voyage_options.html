@@ -1,0 +1,275 @@
+{% extends "base.html" %}
+
+{% block title %}Voyage Options - Camargue Sailing{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1>Voyage Options</h1>
+        <p class="page-subtitle">Choose the Perfect Sailing Experience for You</p>
+    </div>
+</div>
+
+<section class="options-intro">
+    <div class="container">
+        <p class="intro-text">
+            We offer a variety of sailing voyage options to suit different interests, experience levels, 
+            and preferences. Whether you're looking to discover the Mediterranean coast, learn sailing 
+            skills, or enjoy a relaxing week at sea, we have the perfect voyage for you.
+        </p>
+    </div>
+</section>
+
+<section class="voyage-options">
+    <div class="container">
+        
+        <!-- Discovery Voyage Option -->
+        <div class="option-card">
+            <div class="option-image">
+                <img src="{{ url_for('static', filename='images/AMEL_2025-10-28.jpeg') }}" alt="Discovery Voyage">
+            </div>
+            <div class="option-content">
+                <h2>🌊 Discovery Voyage</h2>
+                <p class="option-subtitle">Explore the Mediterranean Coast</p>
+                <p class="option-description">
+                    Perfect for those who want to experience the beauty of the South of France from the sea. 
+                    This voyage focuses on discovering hidden coves, charming coastal villages, and pristine 
+                    beaches along the Mediterranean coastline.
+                </p>
+                <div class="option-highlights">
+                    <h3>Highlights:</h3>
+                    <ul>
+                        <li>Visit secluded anchorages and beautiful bays</li>
+                        <li>Explore coastal villages and local markets</li>
+                        <li>Swimming and snorkeling in crystal-clear waters</li>
+                        <li>Flexible itinerary based on weather and group preferences</li>
+                        <li>Relaxed pace with plenty of time to enjoy each location</li>
+                    </ul>
+                </div>
+                <div class="option-details">
+                    <span class="detail-item"><strong>Duration:</strong> 7 days / 6 nights</span>
+                    <span class="detail-item"><strong>Experience Level:</strong> All levels welcome</span>
+                    <span class="detail-item"><strong>Group Size:</strong> 4-6 passengers</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Learning Voyage Option -->
+        <div class="option-card">
+            <div class="option-image">
+                <img src="{{ url_for('static', filename='images/AMEL_2025-11-16.jpeg') }}" alt="Learning Voyage">
+            </div>
+            <div class="option-content">
+                <h2>⛵ Learning Voyage</h2>
+                <p class="option-subtitle">Develop Your Sailing Skills</p>
+                <p class="option-description">
+                    Ideal for those who want to learn or improve their sailing abilities. Our experienced 
+                    skipper will teach you navigation, sail handling, boat handling, and safety procedures 
+                    while exploring the beautiful Mediterranean coast.
+                </p>
+                <div class="option-highlights">
+                    <h3>Highlights:</h3>
+                    <ul>
+                        <li>Hands-on sailing instruction from experienced skipper</li>
+                        <li>Learn navigation, sail trim, and boat handling</li>
+                        <li>Practice anchoring, mooring, and docking techniques</li>
+                        <li>Weather routing and passage planning</li>
+                        <li>Safety procedures and emergency protocols</li>
+                        <li>Certificate of participation available</li>
+                    </ul>
+                </div>
+                <div class="option-details">
+                    <span class="detail-item"><strong>Duration:</strong> 7 days / 6 nights</span>
+                    <span class="detail-item"><strong>Experience Level:</strong> Beginners to intermediate</span>
+                    <span class="detail-item"><strong>Group Size:</strong> 4-6 passengers</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Relaxation Voyage Option -->
+        <div class="option-card">
+            <div class="option-image">
+                <img src="{{ url_for('static', filename='images/AMEL_2026-02-03.jpeg') }}" alt="Relaxation Voyage">
+            </div>
+            <div class="option-content">
+                <h2>🌅 Relaxation Voyage</h2>
+                <p class="option-subtitle">Unwind and Recharge at Sea</p>
+                <p class="option-description">
+                    Designed for those seeking peace and tranquility. This voyage emphasizes relaxation, 
+                    with plenty of time for swimming, sunbathing, reading, and enjoying the simple pleasures 
+                    of life aboard a sailing yacht in the Mediterranean.
+                </p>
+                <div class="option-highlights">
+                    <h3>Highlights:</h3>
+                    <ul>
+                        <li>Peaceful anchorages in quiet bays</li>
+                        <li>Leisurely pace with no rush</li>
+                        <li>Time for swimming, snorkeling, and water activities</li>
+                        <li>Sunset watching and stargazing</li>
+                        <li>Fresh Mediterranean cuisine</li>
+                        <li>Digital detox opportunity (limited connectivity)</li>
+                    </ul>
+                </div>
+                <div class="option-details">
+                    <span class="detail-item"><strong>Duration:</strong> 7 days / 6 nights</span>
+                    <span class="detail-item"><strong>Experience Level:</strong> All levels welcome</span>
+                    <span class="detail-item"><strong>Group Size:</strong> 4-6 passengers</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Custom Voyage Option -->
+        <div class="option-card">
+            <div class="option-image">
+                <img src="{{ url_for('static', filename='images/AMEL_2025-11-10.jpeg') }}" alt="Custom Voyage">
+            </div>
+            <div class="option-content">
+                <h2>🎯 Custom Voyage</h2>
+                <p class="option-subtitle">Tailor Your Perfect Experience</p>
+                <p class="option-description">
+                    Create your own unique sailing adventure. Whether you have specific destinations in mind, 
+                    want to combine learning with exploration, or have special interests like photography or 
+                    wildlife watching, we can customize a voyage to match your vision.
+                </p>
+                <div class="option-highlights">
+                    <h3>Highlights:</h3>
+                    <ul>
+                        <li>Personalized itinerary based on your preferences</li>
+                        <li>Choose your focus: sailing, exploring, relaxing, or a mix</li>
+                        <li>Special interests accommodated (photography, diving, etc.)</li>
+                        <li>Flexible schedule and activities</li>
+                        <li>Private charter options available</li>
+                        <li>Ideal for families, groups, or special occasions</li>
+                    </ul>
+                </div>
+                <div class="option-details">
+                    <span class="detail-item"><strong>Duration:</strong> Flexible (7+ days)</span>
+                    <span class="detail-item"><strong>Experience Level:</strong> All levels welcome</span>
+                    <span class="detail-item"><strong>Group Size:</strong> 2-6 passengers</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<section class="yacht-showcase">
+    <div class="container">
+        <h2>Our AMEL Yacht</h2>
+        <p class="section-intro">
+            All voyage options are conducted aboard our premium AMEL yacht, offering comfort, 
+            safety, and excellent sailing performance.
+        </p>
+        
+        <div class="showcase-gallery">
+            <div class="showcase-item">
+                <img src="{{ url_for('static', filename='images/AMEL_2026-01-03.jpeg') }}" alt="AMEL Interior">
+                <p>Spacious and comfortable interior</p>
+            </div>
+            <div class="showcase-item">
+                <img src="{{ url_for('static', filename='images/AMEL_2026-01-03_(2).jpeg') }}" alt="AMEL Cabin">
+                <p>Private cabins for restful nights</p>
+            </div>
+            <div class="showcase-item">
+                <img src="{{ url_for('static', filename='images/AMEL_2026-01-03_(3).jpeg') }}" alt="AMEL Galley">
+                <p>Well-equipped galley for meal preparation</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="comparison-section">
+    <div class="container">
+        <h2>Compare Voyage Options</h2>
+        <div class="comparison-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Discovery</th>
+                        <th>Learning</th>
+                        <th>Relaxation</th>
+                        <th>Custom</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Sailing Instruction</td>
+                        <td>Basic</td>
+                        <td>Intensive</td>
+                        <td>Optional</td>
+                        <td>Your Choice</td>
+                    </tr>
+                    <tr>
+                        <td>Pace</td>
+                        <td>Moderate</td>
+                        <td>Active</td>
+                        <td>Leisurely</td>
+                        <td>Flexible</td>
+                    </tr>
+                    <tr>
+                        <td>Destinations</td>
+                        <td>Multiple</td>
+                        <td>Varied</td>
+                        <td>Few, peaceful</td>
+                        <td>Your Choice</td>
+                    </tr>
+                    <tr>
+                        <td>Activities</td>
+                        <td>Exploring</td>
+                        <td>Learning</td>
+                        <td>Relaxing</td>
+                        <td>Your Choice</td>
+                    </tr>
+                    <tr>
+                        <td>Best For</td>
+                        <td>Adventurers</td>
+                        <td>Learners</td>
+                        <td>Relaxers</td>
+                        <td>Everyone</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<section class="pricing-info">
+    <div class="container">
+        <h2>Pricing & Booking</h2>
+        <div class="pricing-content">
+            <p>
+                All voyage options are priced per person for the full week. Pricing varies by season 
+                and group size. Contact us for detailed pricing information and availability.
+            </p>
+            <div class="pricing-features">
+                <h3>All Voyages Include:</h3>
+                <div class="features-grid">
+                    <div class="feature-item">✓ Professional skipper</div>
+                    <div class="feature-item">✓ Yacht charter</div>
+                    <div class="feature-item">✓ Fuel and marina fees</div>
+                    <div class="feature-item">✓ Safety equipment</div>
+                    <div class="feature-item">✓ Bed linens and towels</div>
+                    <div class="feature-item">✓ Dinghy with outboard</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="cta-section">
+    <div class="container">
+        <h2>Ready to Choose Your Voyage?</h2>
+        <p>Sign up to view our calendar and book your preferred voyage option</p>
+        <div class="cta-buttons">
+            {% if session.get('user_id') %}
+                <a href="/calendar" class="btn btn-primary btn-large">View Calendar & Book</a>
+                <a href="/voyages" class="btn btn-secondary btn-large">Learn More About Voyages</a>
+            {% else %}
+                <a href="/signup" class="btn btn-primary btn-large">Sign Up Now</a>
+                <a href="/signin" class="btn btn-secondary btn-large">Sign In</a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

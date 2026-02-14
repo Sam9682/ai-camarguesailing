@@ -119,6 +119,21 @@ def create_app(config_class=Config):
         from flask import render_template
         return render_template('camargue.html')
     
+    @app.route('/voyage-options')
+    def voyage_options():
+        """
+        Voyage options page route displaying different voyage options.
+        
+        This route renders the voyage options page with information about
+        different types of sailing voyages available, including discovery
+        voyages, learning voyages, and custom options. Includes AMEL boat
+        images and detailed descriptions from the business plan.
+        
+        Requirements: 1.4, 1.5
+        """
+        from flask import render_template
+        return render_template('voyage_options.html')
+    
     return app
 
 

@@ -365,3 +365,114 @@ def test_camargue_page_accessible_without_auth():
     # Should return 200, not redirect to login
     assert response.status_code == 200
     assert b'The Camargue Region' in response.data
+
+
+def test_voyage_options_page_route():
+    """
+    Test that the voyage options page route renders successfully.
+    
+    Requirements: 1.4
+    """
+    app = create_app()
+    client = app.test_client()
+    
+    response = client.get('/voyage-options')
+    
+    # Verify successful response
+    assert response.status_code == 200
+    
+    # Verify voyage options page content is present
+    assert b'Voyage Options' in response.data
+    assert b'Choose the Perfect Sailing Experience' in response.data
+
+
+def test_voyage_options_displays_different_options():
+    """
+    Test that the voyage options page displays different voyage types.
+    
+    Requirements: 1.4
+    """
+    app = create_app()
+    client = app.test_client()
+    
+    response = client.get('/voyage-options')
+    
+    # Verify different voyage options are displayed
+    assert b'Discovery Voyage' in response.data
+    assert b'Learning Voyage' in response.data
+    assert b'Relaxation Voyage' in response.data
+    assert b'Custom Voyage' in response.data
+
+
+def test_voyage_options_includes_amel_images():
+    """
+    Test that the voyage options page includes AMEL boat images.
+    
+    Requirements: 1.4, 1.5
+    """
+    app = create_app()
+    client = app.test_client()
+    
+    response = client.get('/voyage-options')
+    
+    # Verify AMEL images are referenced
+    assert b'AMEL' in response.data
+    assert b'.jpeg' in response.data
+    assert b'images/AMEL' in response.data
+    
+    # Verify multiple images are included
+    assert response.data.count(b'images/AMEL') >= 4
+
+
+def test_voyage_options_displays_details():
+    """
+    Test that the voyage options page displays detailed information.
+    
+    Requirements: 1.4
+    """
+    app = create_app()
+    client = app.test_client()
+    
+    response = client.get('/voyage-options')
+    
+    # Verify detailed information is present
+    assert b'Duration:' in response.data
+    assert b'Experience Level:' in response.data
+    assert b'Group Size:' in response.data
+    assert b'Highlights:' in response.data
+
+
+def test_voyage_options_includes_comparison():
+    """
+    Test that the voyage options page includes comparison information.
+    
+    Requirements: 1.4
+    """
+    app = create_app()
+    client = app.test_client()
+    
+    response = client.get('/voyage-options')
+    
+    # Verify comparison section is present
+    assert b'Compare Voyage Options' in response.data
+    assert b'Discovery' in response.data
+    assert b'Learning' in response.data
+    assert b'Relaxation' in response.data
+    assert b'Custom' in response.data
+
+
+def test_voyage_options_accessible_without_auth():
+    """
+    Test that the voyage options page is accessible without authentication.
+    
+    Requirements: 1.4, 1.6
+    """
+    app = create_app()
+    client = app.test_client()
+    
+    # Access without authentication
+    response = client.get('/voyage-options')
+    
+    # Should return 200, not redirect to login
+    assert response.status_code == 200
+    assert b'Voyage Options' in response.data
