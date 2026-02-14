@@ -171,3 +171,197 @@ def test_base_template_unverified_badge():
     # Should show unverified badge
     assert b'Unverified' in response.data
     assert b'unverified@example.com' in response.data
+
+
+def test_home_page_route():
+    """
+    Test that the home page route renders successfully.
+    
+    Requirements: 1.1
+    """
+    app = create_app()
+    client = app.test_client()
+    
+    response = client.get('/')
+    
+    # Verify successful response
+    assert response.status_code == 200
+    
+    # Verify home page content is present
+    assert b'Welcome to Camargue Sailing' in response.data
+    assert b'Experience the Magic of the Mediterranean' in response.data
+
+
+def test_home_page_business_overview():
+    """
+    Test that the home page displays sailing business overview.
+    
+    Requirements: 1.1
+    """
+    app = create_app()
+    client = app.test_client()
+    
+    response = client.get('/')
+    
+    # Verify business overview content
+    assert b'About Our Sailing Business' in response.data
+    assert b'Camargue Sailing offers authentic sailing experiences' in response.data
+    assert b'Saintes-Maries-de-la-Mer' in response.data
+    assert b'one-week sailing voyages' in response.data
+
+
+def test_home_page_features():
+    """
+    Test that the home page displays key features.
+    
+    Requirements: 1.1
+    """
+    app = create_app()
+    client = app.test_client()
+    
+    response = client.get('/')
+    
+    # Verify features section
+    assert b'Why Choose Camargue Sailing?' in response.data
+    assert b'Premium AMEL Yacht' in response.data
+    assert b'Mediterranean Beauty' in response.data
+    assert b'Expert Skipper' in response.data
+    assert b'One-Week Voyages' in response.data
+
+
+def test_home_page_includes_amel_images():
+    """
+    Test that the home page includes AMEL boat images.
+    
+    Requirements: 1.1, 1.5
+    """
+    app = create_app()
+    client = app.test_client()
+    
+    response = client.get('/')
+    
+    # Verify AMEL images are referenced
+    assert b'AMEL' in response.data
+    assert b'.jpeg' in response.data
+    assert b'images/AMEL' in response.data
+
+
+def test_home_page_call_to_action():
+    """
+    Test that the home page includes call-to-action elements.
+    
+    Requirements: 1.1
+    """
+    app = create_app()
+    client = app.test_client()
+    
+    response = client.get('/')
+    
+    # Verify CTA section
+    assert b'Ready to Set Sail?' in response.data
+    assert b'Explore Voyages' in response.data or b'View Calendar' in response.data
+
+
+def test_camargue_page_route():
+    """
+    Test that the Camargue info page route renders successfully.
+    
+    Requirements: 1.3
+    """
+    app = create_app()
+    client = app.test_client()
+    
+    response = client.get('/camargue')
+    
+    # Verify successful response
+    assert response.status_code == 200
+    
+    # Verify Camargue page content is present
+    assert b'The Camargue Region' in response.data
+    assert b'Saintes-Maries-de-la-Mer' in response.data
+
+
+def test_camargue_page_area_information():
+    """
+    Test that the Camargue page displays area information.
+    
+    Requirements: 1.3
+    """
+    app = create_app()
+    client = app.test_client()
+    
+    response = client.get('/camargue')
+    
+    # Verify Camargue area information
+    assert b'Discover the Camargue' in response.data
+    assert b'natural region in the South of France' in response.data
+    assert b'Rh\xc3\xb4ne River' in response.data or b'Rhone River' in response.data
+    assert b'Mediterranean Sea' in response.data
+
+
+def test_camargue_page_natural_features():
+    """
+    Test that the Camargue page displays natural features.
+    
+    Requirements: 1.3
+    """
+    app = create_app()
+    client = app.test_client()
+    
+    response = client.get('/camargue')
+    
+    # Verify natural features are described
+    assert b'Pink Flamingos' in response.data or b'flamingos' in response.data
+    assert b'White Horses' in response.data or b'Camargue horses' in response.data
+    assert b'Black Bulls' in response.data or b'bulls' in response.data
+
+
+def test_camargue_page_saintes_maries_info():
+    """
+    Test that the Camargue page displays Saintes-Maries-de-la-Mer information.
+    
+    Requirements: 1.3
+    """
+    app = create_app()
+    client = app.test_client()
+    
+    response = client.get('/camargue')
+    
+    # Verify Saintes-Maries-de-la-Mer information
+    assert b'Saintes-Maries-de-la-Mer' in response.data
+    assert b'home port' in response.data or b'capital of the Camargue' in response.data
+    assert b'village' in response.data
+    assert b'marina' in response.data or b'Marina' in response.data
+
+
+def test_camargue_page_sailing_context():
+    """
+    Test that the Camargue page provides sailing context.
+    
+    Requirements: 1.3
+    """
+    app = create_app()
+    client = app.test_client()
+    
+    response = client.get('/camargue')
+    
+    # Verify sailing context is provided
+    assert b'Sailing from the Camargue' in response.data or b'sailing' in response.data
+    assert b'Mediterranean' in response.data
+
+
+def test_camargue_page_accessible_without_auth():
+    """
+    Test that the Camargue page is accessible without authentication.
+    
+    Requirements: 1.3, 1.6
+    """
+    app = create_app()
+    client = app.test_client()
+    
+    # Access without authentication
+    response = client.get('/camargue')
+    
+    # Should return 200, not redirect to login
+    assert response.status_code == 200
+    assert b'The Camargue Region' in response.data

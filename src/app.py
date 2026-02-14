@@ -91,6 +91,34 @@ def create_app(config_class=Config):
         from flask import render_template
         return render_template('home.html')
     
+    @app.route('/voyages')
+    def voyages():
+        """
+        Voyages page route displaying one-week sailing voyage information.
+        
+        This route renders the voyages page with detailed information about
+        one-week sailing trips in the South of France, including AMEL boat
+        images, voyage details, typical itinerary, and what's included.
+        
+        Requirements: 1.2, 1.5
+        """
+        from flask import render_template
+        return render_template('voyages.html')
+    
+    @app.route('/camargue')
+    def camargue():
+        """
+        Camargue info page route displaying area information.
+        
+        This route renders the Camargue page with information about
+        the Camargue area and Saintes-Maries-de-la-Mer, including
+        regional features, attractions, and sailing context.
+        
+        Requirements: 1.3
+        """
+        from flask import render_template
+        return render_template('camargue.html')
+    
     return app
 
 
