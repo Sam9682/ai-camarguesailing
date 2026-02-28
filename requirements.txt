@@ -1,10 +1,12 @@
 # Flask web framework
 Flask==3.0.0
 Werkzeug==3.0.1
+Flask-Babel==4.0.0
+Babel==2.14.0
 
 # Database
 SQLAlchemy==2.0.23
-psycopg[binary]==3.3.2
+psycopg2-binary==2.9.9
 
 # Email
 Flask-Mail==0.9.1

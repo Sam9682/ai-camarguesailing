@@ -1,0 +1,667 @@
+# French translations for Camargue Sailing.
+# Copyright (C) 2026 Camargue Sailing
+# This file is distributed under the same license as the Camargue Sailing project.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-02-14 12:00+0000\n"
+"PO-Revision-Date: 2024-02-14 12:00+0000\n"
+"Last-Translator: \n"
+"Language: fr\n"
+"Language-Team: French\n"
+"Plural-Forms: nplurals=2; plural=(n > 1)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel\n"
+
+# Navigation
+msgid "Home"
+msgstr "Accueil"
+
+msgid "Voyages"
+msgstr "Voyages"
+
+msgid "Camargue"
+msgstr "Camargue"
+
+msgid "Voyage Options"
+msgstr "Options de Voyage"
+
+msgid "Calendar"
+msgstr "Calendrier"
+
+msgid "Forum"
+msgstr "Forum"
+
+# Authentication
+msgid "Sign In"
+msgstr "Se Connecter"
+
+msgid "Sign Up"
+msgstr "S'inscrire"
+
+msgid "Sign Out"
+msgstr "Se Déconnecter"
+
+msgid "Welcome"
+msgstr "Bienvenue"
+
+msgid "Unverified"
+msgstr "Non vérifié"
+
+# Home Page
+msgid "Welcome to Camargue Sailing"
+msgstr "Bienvenue à Camargue Sailing"
+
+msgid "Experience the Magic of the Mediterranean"
+msgstr "Découvrez la Magie de la Méditerranée"
+
+msgid "Discover the beauty of the South of France aboard our AMEL sailing yacht. Join us for unforgettable one-week voyages departing from Saintes-Maries-de-la-Mer in the heart of the Camargue region."
+msgstr "Découvrez la beauté du Sud de la France à bord de notre voilier AMEL. Rejoignez-nous pour des voyages inoubliables d'une semaine au départ de Saintes-Maries-de-la-Mer au cœur de la Camargue."
+
+msgid "Explore Voyages"
+msgstr "Explorer les Voyages"
+
+msgid "View Options"
+msgstr "Voir les Options"
+
+msgid "Why Choose Camargue Sailing?"
+msgstr "Pourquoi Choisir Camargue Sailing ?"
+
+msgid "Premium AMEL Yacht"
+msgstr "Voilier AMEL Premium"
+
+msgid "Sail aboard a comfortable and well-equipped AMEL yacht, renowned for its seaworthiness and comfort."
+msgstr "Naviguez à bord d'un voilier AMEL confortable et bien équipé, réputé pour sa navigabilité et son confort."
+
+msgid "Mediterranean Beauty"
+msgstr "Beauté Méditerranéenne"
+
+msgid "Explore the stunning coastline of the South of France, from the Camargue to hidden coves and charming ports."
+msgstr "Explorez le magnifique littoral du Sud de la France, de la Camargue aux criques cachées et aux ports charmants."
+
+msgid "Expert Skipper"
+msgstr "Skipper Expert"
+
+msgid "Benefit from the experience and local knowledge of our professional skipper for a safe and enriching voyage."
+msgstr "Profitez de l'expérience et de la connaissance locale de notre skipper professionnel pour un voyage sûr et enrichissant."
+
+msgid "One-Week Voyages"
+msgstr "Voyages d'une Semaine"
+
+msgid "Perfect duration to disconnect, relax, and fully immerse yourself in the sailing experience."
+msgstr "Durée parfaite pour se déconnecter, se détendre et s'immerger pleinement dans l'expérience de la voile."
+
+msgid "About Our Sailing Business"
+msgstr "À Propos de Notre Entreprise de Voile"
+
+msgid "Camargue Sailing offers authentic sailing experiences in the South of France. Based in Saintes-Maries-de-la-Mer, we provide one-week sailing voyages that combine adventure, relaxation, and discovery."
+msgstr "Camargue Sailing propose des expériences de voile authentiques dans le Sud de la France. Basés à Saintes-Maries-de-la-Mer, nous proposons des voyages en voilier d'une semaine qui combinent aventure, détente et découverte."
+
+msgid "Our AMEL yacht is perfectly suited for comfortable cruising along the Mediterranean coast. Whether you're an experienced sailor or a complete beginner, our voyages are designed to provide an unforgettable experience."
+msgstr "Notre voilier AMEL est parfaitement adapté pour une croisière confortable le long de la côte méditerranéenne. Que vous soyez un marin expérimenté ou un débutant complet, nos voyages sont conçus pour offrir une expérience inoubliable."
+
+msgid "From the wild beauty of the Camargue to the azure waters of the Mediterranean, each voyage is a unique adventure. Join us to discover hidden beaches, charming coastal villages, and the freedom of life at sea."
+msgstr "De la beauté sauvage de la Camargue aux eaux azurées de la Méditerranée, chaque voyage est une aventure unique. Rejoignez-nous pour découvrir des plages cachées, de charmants villages côtiers et la liberté de la vie en mer."
+
+msgid "Discover the Camargue"
+msgstr "Découvrir la Camargue"
+
+msgid "Ready to Set Sail?"
+msgstr "Prêt à Prendre la Mer ?"
+
+msgid "Join our community of sailors and book your next adventure"
+msgstr "Rejoignez notre communauté de marins et réservez votre prochaine aventure"
+
+msgid "View Calendar"
+msgstr "Voir le Calendrier"
+
+msgid "Sign Up Now"
+msgstr "S'inscrire Maintenant"
+
+# Footer
+msgid "Experience the beauty of the South of France on our AMEL sailing voyages."
+msgstr "Découvrez la beauté du Sud de la France lors de nos voyages en voilier AMEL."
+
+msgid "Quick Links"
+msgstr "Liens Rapides"
+
+msgid "Contact"
+msgstr "Contact"
+
+msgid "Saintes-Maries-de-la-Mer, France"
+msgstr "Saintes-Maries-de-la-Mer, France"
+
+msgid "Email"
+msgstr "Email"
+
+msgid "All rights reserved"
+msgstr "Tous droits réservés"
+
+# Camargue Page
+msgid "The Camargue - Camargue Sailing"
+msgstr "La Camargue - Camargue Sailing"
+
+msgid "The Camargue Region"
+msgstr "La Région de la Camargue"
+
+msgid "Where Wild Nature Meets the Mediterranean"
+msgstr "Où la Nature Sauvage Rencontre la Méditerranée"
+
+msgid "Discover the Camargue"
+msgstr "Découvrir la Camargue"
+
+msgid "The Camargue is a unique natural region in the South of France, where the Rhône River meets the Mediterranean Sea. This vast wetland area is renowned for its wild beauty, diverse wildlife, and rich cultural heritage."
+msgstr "La Camargue est une région naturelle unique dans le Sud de la France, où le Rhône rencontre la Méditerranée. Cette vaste zone humide est réputée pour sa beauté sauvage, sa faune diversifiée et son riche patrimoine culturel."
+
+msgid "Characterized by salt marshes, lagoons, and endless beaches, the Camargue is home to iconic white horses, pink flamingos, and black bulls. It's a land of traditions, where cowboys (gardians) still tend their herds on horseback, and where the sea and sky seem to merge on the horizon."
+msgstr "Caractérisée par des marais salants, des lagunes et des plages infinies, la Camargue abrite des chevaux blancs emblématiques, des flamants roses et des taureaux noirs. C'est une terre de traditions, où les gardians s'occupent encore de leurs troupeaux à cheval, et où la mer et le ciel semblent se fondre à l'horizon."
+
+msgid "Natural Wonders"
+msgstr "Merveilles Naturelles"
+
+msgid "Pink Flamingos"
+msgstr "Flamants Roses"
+
+msgid "Thousands of flamingos inhabit the lagoons and salt marshes, creating spectacular pink clouds against the blue sky."
+msgstr "Des milliers de flamants habitent les lagunes et les marais salants, créant des nuages roses spectaculaires contre le ciel bleu."
+
+msgid "White Horses"
+msgstr "Chevaux Blancs"
+
+msgid "The famous Camargue horses, born dark and turning white with age, roam freely across the marshlands."
+msgstr "Les célèbres chevaux de Camargue, nés foncés et devenant blancs avec l'âge, errent librement dans les marais."
+
+msgid "Black Bulls"
+msgstr "Taureaux Noirs"
+
+msgid "The region's iconic black bulls are central to local traditions and the famous Camargue bullfighting culture."
+msgstr "Les taureaux noirs emblématiques de la région sont au cœur des traditions locales et de la célèbre culture taurine camarguaise."
+
+msgid "Salt Marshes"
+msgstr "Marais Salants"
+
+msgid "Vast salt flats and marshes create a unique ecosystem, supporting diverse bird species and traditional salt harvesting."
+msgstr "De vastes marais salants créent un écosystème unique, abritant diverses espèces d'oiseaux et la récolte traditionnelle du sel."
+
+msgid "Saintes-Maries-de-la-Mer"
+msgstr "Saintes-Maries-de-la-Mer"
+
+msgid "Our home port and the capital of the Camargue, Saintes-Maries-de-la-Mer is a charming seaside village steeped in history and tradition."
+msgstr "Notre port d'attache et capitale de la Camargue, Saintes-Maries-de-la-Mer est un charmant village balnéaire imprégné d'histoire et de tradition."
+
+msgid "A Historic Village"
+msgstr "Un Village Historique"
+
+msgid "Saintes-Maries-de-la-Mer takes its name from a Christian legend. According to tradition, Mary Magdalene, Mary Salome, and Mary Jacobe arrived here by boat after fleeing persecution in the Holy Land. The village's fortified church, built in the 12th century, stands as a testament to this rich history."
+msgstr "Saintes-Maries-de-la-Mer tire son nom d'une légende chrétienne. Selon la tradition, Marie-Madeleine, Marie Salomé et Marie Jacobé sont arrivées ici en bateau après avoir fui la persécution en Terre Sainte. L'église fortifiée du village, construite au XIIe siècle, témoigne de cette riche histoire."
+
+msgid "Cultural Heritage"
+msgstr "Patrimoine Culturel"
+
+msgid "The village is famous for its annual pilgrimage in May, when thousands of Roma people gather to honor Saint Sarah, their patron saint. This colorful celebration fills the streets with music, processions, and traditional festivities."
+msgstr "Le village est célèbre pour son pèlerinage annuel en mai, lorsque des milliers de Roms se rassemblent pour honorer Sainte Sarah, leur sainte patronne. Cette célébration colorée remplit les rues de musique, de processions et de festivités traditionnelles."
+
+msgid "A Sailor's Paradise"
+msgstr "Un Paradis pour les Marins"
+
+msgid "With its marina, beautiful beaches, and direct access to the Mediterranean, Saintes-Maries-de-la-Mer is the perfect starting point for sailing adventures. The village offers all necessary amenities while maintaining its authentic Camargue character."
+msgstr "Avec son port de plaisance, ses belles plages et son accès direct à la Méditerranée, Saintes-Maries-de-la-Mer est le point de départ idéal pour les aventures en voilier. Le village offre toutes les commodités nécessaires tout en conservant son caractère camarguais authentique."
+
+msgid "Village Highlights"
+msgstr "Points Forts du Village"
+
+msgid "Sailing from the Camargue"
+msgstr "Naviguer depuis la Camargue"
+
+msgid "Departing from Saintes-Maries-de-la-Mer offers unique advantages for sailing enthusiasts. The location provides easy access to diverse Mediterranean destinations while being sheltered from the strongest winds by the surrounding coastline."
+msgstr "Partir de Saintes-Maries-de-la-Mer offre des avantages uniques pour les passionnés de voile. L'emplacement offre un accès facile à diverses destinations méditerranéennes tout en étant protégé des vents les plus forts par le littoral environnant."
+
+msgid "Strategic Location"
+msgstr "Emplacement Stratégique"
+
+msgid "Positioned at the mouth of the Rhône delta, the Camargue offers quick access to both the Spanish coast to the west and the French Riviera to the east. You can explore diverse destinations within a week's sailing."
+msgstr "Positionnée à l'embouchure du delta du Rhône, la Camargue offre un accès rapide à la fois à la côte espagnole à l'ouest et à la Côte d'Azur à l'est. Vous pouvez explorer diverses destinations en une semaine de navigation."
+
+msgid "Varied Sailing Conditions"
+msgstr "Conditions de Navigation Variées"
+
+msgid "From calm morning sails to exciting afternoon breezes, the Camargue coast provides excellent sailing conditions for all experience levels. The famous Mistral wind, while strong, creates perfect sailing weather when conditions are right."
+msgstr "Des navigations matinales calmes aux brises excitantes de l'après-midi, la côte camarguaise offre d'excellentes conditions de navigation pour tous les niveaux d'expérience. Le célèbre vent du Mistral, bien que fort, crée des conditions de navigation parfaites lorsque les conditions sont bonnes."
+
+msgid "Unspoiled Coastline"
+msgstr "Littoral Préservé"
+
+msgid "Unlike more developed areas of the Mediterranean, the Camargue coast retains its wild character. Discover secluded anchorages, pristine beaches, and authentic fishing villages along your voyage."
+msgstr "Contrairement aux zones plus développées de la Méditerranée, la côte camarguaise conserve son caractère sauvage. Découvrez des mouillages isolés, des plages vierges et des villages de pêcheurs authentiques tout au long de votre voyage."
+
+msgid "Nearby Attractions"
+msgstr "Attractions à Proximité"
+
+msgid "Best Time to Visit"
+msgstr "Meilleure Période pour Visiter"
+
+msgid "Spring (April-June)"
+msgstr "Printemps (Avril-Juin)"
+
+msgid "Ideal sailing weather with mild temperatures and blooming landscapes. The famous pilgrimage takes place in late May, adding cultural richness to your visit."
+msgstr "Conditions de navigation idéales avec des températures douces et des paysages en fleurs. Le célèbre pèlerinage a lieu fin mai, ajoutant une richesse culturelle à votre visite."
+
+msgid "Summer (July-August)"
+msgstr "Été (Juillet-Août)"
+
+msgid "Warm Mediterranean weather perfect for swimming and beach activities. Longer days mean more time on the water, though it's the busiest season."
+msgstr "Temps méditerranéen chaud parfait pour la baignade et les activités de plage. Les jours plus longs signifient plus de temps sur l'eau, bien que ce soit la saison la plus chargée."
+
+msgid "Autumn (September-October)"
+msgstr "Automne (Septembre-Octobre)"
+
+msgid "Excellent sailing conditions with warm water and fewer crowds. The light is spectacular, and the Camargue takes on golden autumn hues."
+msgstr "Excellentes conditions de navigation avec de l'eau chaude et moins de monde. La lumière est spectaculaire et la Camargue prend des teintes automnales dorées."
+
+msgid "Experience the Camargue by Sea"
+msgstr "Découvrez la Camargue par la Mer"
+
+msgid "Join us for an unforgettable sailing voyage from Saintes-Maries-de-la-Mer"
+msgstr "Rejoignez-nous pour un voyage en voilier inoubliable au départ de Saintes-Maries-de-la-Mer"
+
+msgid "Learn About Voyages"
+msgstr "En Savoir Plus sur les Voyages"
+
+msgid "Explore Voyages"
+msgstr "Explorer les Voyages"
+
+# Voyages Page
+msgid "Voyages - Camargue Sailing"
+msgstr "Voyages - Camargue Sailing"
+
+msgid "One-Week Sailing Voyages"
+msgstr "Voyages en Voilier d'une Semaine"
+
+msgid "Discover the South of France from the Sea"
+msgstr "Découvrez le Sud de la France depuis la Mer"
+
+msgid "Your Mediterranean Adventure Awaits"
+msgstr "Votre Aventure Méditerranéenne Vous Attend"
+
+msgid "Our one-week sailing voyages offer the perfect balance of adventure and relaxation. Departing from Saintes-Maries-de-la-Mer in the heart of the Camargue, each voyage takes you along the stunning Mediterranean coastline of the South of France."
+msgstr "Nos voyages en voilier d'une semaine offrent l'équilibre parfait entre aventure et détente. Au départ de Saintes-Maries-de-la-Mer au cœur de la Camargue, chaque voyage vous emmène le long du magnifique littoral méditerranéen du Sud de la France."
+
+msgid "Whether you're seeking to learn sailing skills, explore hidden coves, or simply enjoy the freedom of life at sea, our voyages provide an authentic and unforgettable experience aboard our comfortable AMEL yacht."
+msgstr "Que vous cherchiez à apprendre les techniques de navigation, à explorer des criques cachées ou simplement à profiter de la liberté de la vie en mer, nos voyages offrent une expérience authentique et inoubliable à bord de notre confortable voilier AMEL."
+
+msgid "What to Expect"
+msgstr "À Quoi S'attendre"
+
+msgid "Duration"
+msgstr "Durée"
+
+msgid "Each voyage lasts one full week (7 days/6 nights), giving you ample time to explore, relax, and truly experience life at sea."
+msgstr "Chaque voyage dure une semaine complète (7 jours/6 nuits), vous donnant amplement le temps d'explorer, de vous détendre et de vraiment vivre la vie en mer."
+
+msgid "Itinerary"
+msgstr "Itinéraire"
+
+msgid "Flexible routes along the Mediterranean coast, adapted to weather conditions and group preferences. Typical destinations include coastal villages, secluded anchorages, and beautiful beaches."
+msgstr "Itinéraires flexibles le long de la côte méditerranéenne, adaptés aux conditions météorologiques et aux préférences du groupe. Les destinations typiques incluent des villages côtiers, des mouillages isolés et de belles plages."
+
+msgid "Group Size"
+msgstr "Taille du Groupe"
+
+msgid "Small groups of 4-6 passengers ensure a personalized experience and comfortable living aboard."
+msgstr "De petits groupes de 4 à 6 passagers garantissent une expérience personnalisée et une vie confortable à bord."
+
+msgid "Experience Level"
+msgstr "Niveau d'Expérience"
+
+msgid "All levels welcome! Whether you're a complete beginner or experienced sailor, our skipper will adapt to your interests and abilities."
+msgstr "Tous niveaux bienvenus ! Que vous soyez débutant complet ou marin expérimenté, notre skipper s'adaptera à vos intérêts et capacités."
+
+msgid "Our AMEL Yacht"
+msgstr "Notre Voilier AMEL"
+
+msgid "Sail aboard a premium AMEL yacht, renowned worldwide for comfort, safety, and seaworthiness. Our vessel is perfectly equipped for extended cruising in the Mediterranean."
+msgstr "Naviguez à bord d'un voilier AMEL premium, réputé dans le monde entier pour son confort, sa sécurité et sa navigabilité. Notre navire est parfaitement équipé pour les croisières prolongées en Méditerranée."
+
+msgid "Yacht Features"
+msgstr "Caractéristiques du Voilier"
+
+msgid "A Typical Day"
+msgstr "Une Journée Type"
+
+msgid "Morning"
+msgstr "Matin"
+
+msgid "Wake up to the gentle motion of the boat. Enjoy breakfast in the cockpit with views of the coast."
+msgstr "Réveillez-vous au doux mouvement du bateau. Profitez du petit-déjeuner dans le cockpit avec vue sur la côte."
+
+msgid "Set Sail"
+msgstr "Lever l'Ancre"
+
+msgid "Weigh anchor and set sail for the day's destination. Learn sailing techniques or simply relax on deck."
+msgstr "Levez l'ancre et mettez les voiles vers la destination du jour. Apprenez les techniques de navigation ou détendez-vous simplement sur le pont."
+
+msgid "Lunch"
+msgstr "Déjeuner"
+
+msgid "Anchor in a beautiful bay for lunch. Swim, snorkel, or explore the shore."
+msgstr "Mouiller dans une belle baie pour le déjeuner. Nagez, faites de la plongée ou explorez le rivage."
+
+msgid "Afternoon Sail"
+msgstr "Navigation de l'Après-midi"
+
+msgid "Continue to the evening anchorage or visit a coastal village."
+msgstr "Continuez vers le mouillage du soir ou visitez un village côtier."
+
+msgid "Evening"
+msgstr "Soirée"
+
+msgid "Anchor for the night. Prepare dinner together, enjoy the sunset, and share stories under the stars."
+msgstr "Mouiller pour la nuit. Préparez le dîner ensemble, profitez du coucher de soleil et partagez des histoires sous les étoiles."
+
+msgid "What's Included"
+msgstr "Ce Qui Est Inclus"
+
+msgid "Not Included"
+msgstr "Non Inclus"
+
+msgid "Ready to Book Your Voyage?"
+msgstr "Prêt à Réserver Votre Voyage ?"
+
+msgid "Join us for an unforgettable week sailing the Mediterranean"
+msgstr "Rejoignez-nous pour une semaine inoubliable de navigation en Méditerranée"
+
+msgid "View Available Dates"
+msgstr "Voir les Dates Disponibles"
+
+msgid "Explore Options"
+msgstr "Explorer les Options"
+
+msgid "Sign up to view our calendar and book your voyage"
+msgstr "Inscrivez-vous pour voir notre calendrier et réserver votre voyage"
+
+# Voyage Options Page
+msgid "Voyage Options - Camargue Sailing"
+msgstr "Options de Voyage - Camargue Sailing"
+
+msgid "Voyage Options"
+msgstr "Options de Voyage"
+
+msgid "Choose the Perfect Sailing Experience for You"
+msgstr "Choisissez l'Expérience de Navigation Parfaite pour Vous"
+
+msgid "We offer a variety of sailing voyage options to suit different interests, experience levels, and preferences. Whether you're looking to discover the Mediterranean coast, learn sailing skills, or enjoy a relaxing week at sea, we have the perfect voyage for you."
+msgstr "Nous proposons une variété d'options de voyages en voilier pour répondre à différents intérêts, niveaux d'expérience et préférences. Que vous cherchiez à découvrir la côte méditerranéenne, à apprendre les techniques de navigation ou à profiter d'une semaine relaxante en mer, nous avons le voyage parfait pour vous."
+
+msgid "Discovery Voyage"
+msgstr "Voyage Découverte"
+
+msgid "Explore the Mediterranean Coast"
+msgstr "Explorer la Côte Méditerranéenne"
+
+msgid "Perfect for those who want to experience the beauty of the South of France from the sea. This voyage focuses on discovering hidden coves, charming coastal villages, and pristine beaches along the Mediterranean coastline."
+msgstr "Parfait pour ceux qui veulent découvrir la beauté du Sud de la France depuis la mer. Ce voyage se concentre sur la découverte de criques cachées, de charmants villages côtiers et de plages vierges le long du littoral méditerranéen."
+
+msgid "Highlights:"
+msgstr "Points Forts :"
+
+msgid "Visit secluded anchorages and beautiful bays"
+msgstr "Visiter des mouillages isolés et de belles baies"
+
+msgid "Explore coastal villages and local markets"
+msgstr "Explorer les villages côtiers et les marchés locaux"
+
+msgid "Swimming and snorkeling in crystal-clear waters"
+msgstr "Nager et faire de la plongée dans des eaux cristallines"
+
+msgid "Flexible itinerary based on weather and group preferences"
+msgstr "Itinéraire flexible basé sur la météo et les préférences du groupe"
+
+msgid "Relaxed pace with plenty of time to enjoy each location"
+msgstr "Rythme détendu avec beaucoup de temps pour profiter de chaque endroit"
+
+msgid "Duration:"
+msgstr "Durée :"
+
+msgid "7 days / 6 nights"
+msgstr "7 jours / 6 nuits"
+
+msgid "Experience Level:"
+msgstr "Niveau d'Expérience :"
+
+msgid "All levels welcome"
+msgstr "Tous niveaux bienvenus"
+
+msgid "Group Size:"
+msgstr "Taille du Groupe :"
+
+msgid "4-6 passengers"
+msgstr "4-6 passagers"
+
+msgid "Learning Voyage"
+msgstr "Voyage Apprentissage"
+
+msgid "Develop Your Sailing Skills"
+msgstr "Développez Vos Compétences en Navigation"
+
+msgid "Ideal for those who want to learn or improve their sailing abilities. Our experienced skipper will teach you navigation, sail handling, boat handling, and safety procedures while exploring the beautiful Mediterranean coast."
+msgstr "Idéal pour ceux qui veulent apprendre ou améliorer leurs compétences en navigation. Notre skipper expérimenté vous enseignera la navigation, le maniement des voiles, la conduite du bateau et les procédures de sécurité tout en explorant la magnifique côte méditerranéenne."
+
+msgid "Hands-on sailing instruction from experienced skipper"
+msgstr "Formation pratique à la navigation par un skipper expérimenté"
+
+msgid "Learn navigation, sail trim, and boat handling"
+msgstr "Apprendre la navigation, le réglage des voiles et la conduite du bateau"
+
+msgid "Practice anchoring, mooring, and docking techniques"
+msgstr "Pratiquer les techniques de mouillage, d'amarrage et d'accostage"
+
+msgid "Weather routing and passage planning"
+msgstr "Routage météo et planification de passage"
+
+msgid "Safety procedures and emergency protocols"
+msgstr "Procédures de sécurité et protocoles d'urgence"
+
+msgid "Certificate of participation available"
+msgstr "Certificat de participation disponible"
+
+msgid "Beginners to intermediate"
+msgstr "Débutants à intermédiaires"
+
+msgid "Relaxation Voyage"
+msgstr "Voyage Détente"
+
+msgid "Unwind and Recharge at Sea"
+msgstr "Se Détendre et Se Ressourcer en Mer"
+
+msgid "Designed for those seeking peace and tranquility. This voyage emphasizes relaxation, with plenty of time for swimming, sunbathing, reading, and enjoying the simple pleasures of life aboard a sailing yacht in the Mediterranean."
+msgstr "Conçu pour ceux qui recherchent la paix et la tranquillité. Ce voyage met l'accent sur la détente, avec beaucoup de temps pour nager, bronzer, lire et profiter des plaisirs simples de la vie à bord d'un voilier en Méditerranée."
+
+msgid "Peaceful anchorages in quiet bays"
+msgstr "Mouillages paisibles dans des baies tranquilles"
+
+msgid "Leisurely pace with no rush"
+msgstr "Rythme tranquille sans précipitation"
+
+msgid "Time for swimming, snorkeling, and water activities"
+msgstr "Temps pour nager, faire de la plongée et des activités nautiques"
+
+msgid "Sunset watching and stargazing"
+msgstr "Observer les couchers de soleil et contempler les étoiles"
+
+msgid "Fresh Mediterranean cuisine"
+msgstr "Cuisine méditerranéenne fraîche"
+
+msgid "Digital detox opportunity (limited connectivity)"
+msgstr "Opportunité de détox numérique (connectivité limitée)"
+
+msgid "Custom Voyage"
+msgstr "Voyage Sur Mesure"
+
+msgid "Tailor Your Perfect Experience"
+msgstr "Créez Votre Expérience Parfaite"
+
+msgid "Create your own unique sailing adventure. Whether you have specific destinations in mind, want to combine learning with exploration, or have special interests like photography or wildlife watching, we can customize a voyage to match your vision."
+msgstr "Créez votre propre aventure de navigation unique. Que vous ayez des destinations spécifiques en tête, que vous souhaitiez combiner apprentissage et exploration, ou que vous ayez des intérêts particuliers comme la photographie ou l'observation de la faune, nous pouvons personnaliser un voyage selon votre vision."
+
+msgid "Personalized itinerary based on your preferences"
+msgstr "Itinéraire personnalisé selon vos préférences"
+
+msgid "Choose your focus: sailing, exploring, relaxing, or a mix"
+msgstr "Choisissez votre focus : navigation, exploration, détente ou un mélange"
+
+msgid "Special interests accommodated (photography, diving, etc.)"
+msgstr "Intérêts spéciaux pris en compte (photographie, plongée, etc.)"
+
+msgid "Flexible schedule and activities"
+msgstr "Horaire et activités flexibles"
+
+msgid "Private charter options available"
+msgstr "Options de charter privé disponibles"
+
+msgid "Ideal for families, groups, or special occasions"
+msgstr "Idéal pour les familles, les groupes ou les occasions spéciales"
+
+msgid "Flexible (7+ days)"
+msgstr "Flexible (7+ jours)"
+
+msgid "2-6 passengers"
+msgstr "2-6 passagers"
+
+msgid "All voyage options are conducted aboard our premium AMEL yacht, offering comfort, safety, and excellent sailing performance."
+msgstr "Toutes les options de voyage se déroulent à bord de notre voilier AMEL premium, offrant confort, sécurité et excellentes performances de navigation."
+
+msgid "Spacious and comfortable interior"
+msgstr "Intérieur spacieux et confortable"
+
+msgid "Private cabins for restful nights"
+msgstr "Cabines privées pour des nuits reposantes"
+
+msgid "Well-equipped galley for meal preparation"
+msgstr "Cuisine bien équipée pour la préparation des repas"
+
+msgid "Compare Voyage Options"
+msgstr "Comparer les Options de Voyage"
+
+msgid "Feature"
+msgstr "Caractéristique"
+
+msgid "Discovery"
+msgstr "Découverte"
+
+msgid "Learning"
+msgstr "Apprentissage"
+
+msgid "Relaxation"
+msgstr "Détente"
+
+msgid "Custom"
+msgstr "Sur Mesure"
+
+msgid "Sailing Instruction"
+msgstr "Formation à la Navigation"
+
+msgid "Basic"
+msgstr "Basique"
+
+msgid "Intensive"
+msgstr "Intensive"
+
+msgid "Optional"
+msgstr "Optionnelle"
+
+msgid "Your Choice"
+msgstr "Votre Choix"
+
+msgid "Pace"
+msgstr "Rythme"
+
+msgid "Moderate"
+msgstr "Modéré"
+
+msgid "Active"
+msgstr "Actif"
+
+msgid "Leisurely"
+msgstr "Tranquille"
+
+msgid "Flexible"
+msgstr "Flexible"
+
+msgid "Destinations"
+msgstr "Destinations"
+
+msgid "Multiple"
+msgstr "Multiples"
+
+msgid "Varied"
+msgstr "Variées"
+
+msgid "Few, peaceful"
+msgstr "Peu, paisibles"
+
+msgid "Activities"
+msgstr "Activités"
+
+msgid "Exploring"
+msgstr "Exploration"
+
+msgid "Relaxing"
+msgstr "Détente"
+
+msgid "Best For"
+msgstr "Idéal Pour"
+
+msgid "Adventurers"
+msgstr "Aventuriers"
+
+msgid "Learners"
+msgstr "Apprenants"
+
+msgid "Relaxers"
+msgstr "Détente"
+
+msgid "Everyone"
+msgstr "Tout le Monde"
+
+msgid "Pricing & Booking"
+msgstr "Tarifs & Réservation"
+
+msgid "All voyage options are priced per person for the full week. Pricing varies by season and group size. Contact us for detailed pricing information and availability."
+msgstr "Toutes les options de voyage sont tarifées par personne pour la semaine complète. Les tarifs varient selon la saison et la taille du groupe. Contactez-nous pour des informations détaillées sur les tarifs et la disponibilité."
+
+msgid "All Voyages Include:"
+msgstr "Tous les Voyages Incluent :"
+
+msgid "Professional skipper"
+msgstr "Skipper professionnel"
+
+msgid "Yacht charter"
+msgstr "Location du voilier"
+
+msgid "Fuel and marina fees"
+msgstr "Carburant et frais de port"
+
+msgid "Safety equipment"
+msgstr "Équipement de sécurité"
+
+msgid "Bed linens and towels"
+msgstr "Draps et serviettes"
+
+msgid "Dinghy with outboard"
+msgstr "Annexe avec moteur hors-bord"
+
+msgid "Ready to Choose Your Voyage?"
+msgstr "Prêt à Choisir Votre Voyage ?"
+
+msgid "Sign up to view our calendar and book your preferred voyage option"
+msgstr "Inscrivez-vous pour voir notre calendrier et réserver l'option de voyage de votre choix"
+
+msgid "View Calendar & Book"
+msgstr "Voir le Calendrier & Réserver"
+
+msgid "Learn More About Voyages"
+msgstr "En Savoir Plus sur les Voyages"

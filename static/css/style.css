@@ -77,6 +77,37 @@ header {
     gap: 1rem;
 }
 
+.language-switcher {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-right: 1rem;
+    padding: 0.3rem 0.8rem;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+.lang-link {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: color 0.3s;
+}
+
+.lang-link:hover {
+    color: #4a90e2;
+}
+
+.lang-link.active {
+    color: #4a90e2;
+    font-weight: bold;
+}
+
+.lang-separator {
+    color: rgba(255, 255, 255, 0.5);
+}
+
 .auth-status {
     color: white;
     margin-right: 1rem;
