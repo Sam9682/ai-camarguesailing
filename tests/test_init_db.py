@@ -13,6 +13,23 @@ from src.database import engine, Base
 from src.models import User, VerificationToken, Booking, ForumPost, ForumReply
 
 
+@pytest.fixture(scope='module', autouse=True)
+def setup_database():
+    """
+    Create database tables before running tests.
+    
+    This fixture ensures that tables are created before any tests run,
+    allowing us to test the database structure and initialization.
+    """
+    # Create all tables
+    Base.metadata.create_all(bind=engine)
+    
+    yield
+    
+    # Clean up after all tests in this module
+    Base.metadata.drop_all(bind=engine)
+
+
 def test_all_tables_created():
     """
     Test that all expected tables are created in the database.
